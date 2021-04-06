@@ -1,6 +1,6 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAMES HERE"
+title: "OBESITY ANALYSIS"
+author: "SALONI GUPTA AJAY KUMAR UNI: SG3910, YOSHA SINGH TOMAR UNI: YT2741"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
