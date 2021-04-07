@@ -3,6 +3,7 @@
 ```{r}
 
 library(dplyr)
+library(ggplot2)
 
 brfs <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
 
@@ -18,6 +19,34 @@ brfs_national_questions <- brfs_national %>%
   group_by(Class) %>%
   select(Class,Question) %>%
   distinct()
+
+View(brfs_national %>% 
+  filter(YearStart!=YearEnd)) # They are the same
+
+brfs_national$YearStart <- as.factor(brfs_national$YearStart)
+
+questions <- unique(brfs_national$Question)
+
+brfs_national_obesity <- brfs_national %>% filter(Class=="Obesity / Weight Status" & Total=="Total")
+
+# g1 <- ggplot(brfs_national_obesity, aes(fill=Question, y=Data_Value, x=YearStart))+ geom_bar(position="dodge", stat="identity")
+# plot(g1)
+
+g_ob <- ggplot(brfs_national_obesity, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Question, group = Question))+geom_line(aes(colour = Question, group = Question)) 
+plot(g_ob)
+
+brfs_national_nutrition <- brfs_national %>% filter(Class=="Fruits and Vegetables" & Total=="Total")
+
+g_nut <- ggplot(brfs_national_nutrition, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Question, group = Question))+geom_line(aes(colour = Question, group = Question)) 
+plot(g_nut)
+
+brfs_national_phy <- brfs_national %>% filter(Class=="Physical Activity" & Total=="Total")
+
+library(scales)
+library(stringr)
+
+g_phy <- ggplot(brfs_national_phy, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Question, group = Question))+geom_line(aes(colour = Question, group = Question)) 
+plot(g_phy + scale_colour_discrete(labels = function(x) str_wrap(x, width = 20)))
 
 
 
