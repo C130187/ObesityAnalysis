@@ -1,1 +1,24 @@
 # Data transformation
+
+```{r}
+
+library(dplyr)
+
+brfs <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
+
+pe <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Policy_and_Environmental_Data.csv")
+
+View(
+  brfs %>% filter(Data_Value_Footnote=="Data not available because sample size is insufficient."))
+
+brfs_national <- brfs %>%
+  filter(LocationDesc=="National")
+
+brfs_national_questions <- brfs_national %>%
+  group_by(Class) %>%
+  select(Class,Question) %>%
+  distinct()
+
+
+
+```
