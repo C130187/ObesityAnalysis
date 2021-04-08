@@ -1,1 +1,110 @@
 # Results
+
+
+```{r}
+
+
+library(dplyr)
+library(ggplot2)
+
+brfs <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
+
+pe <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Policy_and_Environmental_Data.csv")
+
+brfs_national <- brfs %>%
+  filter(LocationDesc=="National")
+
+brfs_national$YearStart <- as.factor(brfs_national$YearStart)
+
+brfs_national$Question <- as.factor(brfs_national$Question)
+brfs_national$QuestionRenamed <- brfs_national$Question
+levels(brfs_national$QuestionRenamed) <- c("Overweight", "Obese", "150 mins Moderate", "150 min Moderate & Muscle Strengthening", "300 min Moderate", "Muscle Strengthening", "No Activity", "No Fruit Comsumption", "No Vegetable Concumption")
+
+brfs_national <- brfs %>%
+  filter(LocationDesc=="National")
+
+brfs_national$YearStart <- as.factor(brfs_national$YearStart)
+
+brfs_national_income <- brfs_national %>% filter(StratificationCategory1=="Income")
+
+brfs_national_income_year <- brfs_national_income %>% filter(Total!="Total" & Income=="Data not reported") %>% group_by(YearStart, Class) %>%
+  summarise(n = n())
+
+```
+
+
+```{r}
+
+library(vcd)
+library(forcats)
+
+brfs_national_income_obesity <- brfs_national_income %>% filter(Class == "Obesity / Weight Status" & QuestionRenamed=="Obese")
+
+brfs_national_income_obesity_mosaic <-  brfs_national_income_obesity %>% select(YearStart,Stratification1,Data_Value) %>% rename(Freq = Data_Value,
+ Income = Stratification1) 
+
+brfs_national_income_obesity_mosaic$Income <- as.factor(brfs_national_income_obesity_mosaic$Income)
+brfs_national_income_obesity_mosaic$Income <- relevel(brfs_national_income_obesity_mosaic$Income,"Less than $15,000")
+
+vcd::mosaic(Income~YearStart, 
+            brfs_national_income_obesity_mosaic,
+            direction=c("v","h"),
+            labeling = labeling_values)
+
+
+
+
+```
+
+```{r}
+
+g_ts_income_obesity <- ggplot(brfs_national_income_obesity_mosaic, aes(y=Freq, x=YearStart))+geom_point(aes(colour = Income, group = Income))+geom_line(aes(colour = Income, group = Income)) 
+plot(g_ts_income_obesity)
+# chaneg Freq to percentage of adults
+
+
+```
+
+``` {r}
+brfs_national_age_obesity <- brfs_national %>% filter(StratificationCategory1=="Age (years)" & Class == "Obesity / Weight Status" & QuestionRenamed=="Obese")
+
+brfs_national_age_obesity_filtered <-  brfs_national_age_obesity %>% select(YearStart,Stratification1,Data_Value) %>%
+  rename(Age_Group = Stratification1)
+
+brfs_national_age_obesity_filtered$Age_Group <- as.factor(brfs_national_age_obesity_filtered$Age_Group)
+
+g_ts_age_obesity <- ggplot(brfs_national_age_obesity_filtered, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Age_Group, group = Age_Group))+geom_line(aes(colour = Age_Group, group = Age_Group)) 
+plot(g_ts_age_obesity)
+
+```
+
+``` {r}
+
+library(directlabels)
+
+brfs_national_obesity <- brfs_national %>% filter(Class == "Obesity / Weight Status" & QuestionRenamed=="Obese")
+
+brfs_national_obesity_filtered <-brfs_national_obesity %>% select(YearStart,StratificationCategory1,Stratification1,Data_Value)
+
+brfs_national_obesity_filtered$StratificationCategory1 <- as.factor(brfs_national_obesity_filtered$StratificationCategory1)
+
+brfs_national_obesity_filtered$Stratification1 <- as.factor(brfs_national_obesity_filtered$Stratification1)
+
+brfs_national_obesity_filtered$Stratification1 <- relevel(brfs_national_obesity_filtered$Stratification1,"Less than $15,000")
+
+brfs_national_obesity_filtered$Stratification1 <- fct_relevel(brfs_national_obesity_filtered$Stratification1, "Less than high school", after = 1)
+
+brfs_national_obesity_filtered$Stratification1 <- fct_relevel(brfs_national_obesity_filtered$Stratification1, "College graduate", after = Inf)
+
+brfs_national_obesity_filtered <- brfs_national_obesity_filtered %>% rename(Stratification=Stratification1)
+
+# make list of plots
+ggList <- lapply(split(brfs_national_obesity_filtered, brfs_national_obesity_filtered$StratificationCategory1), function(i) {
+  ggplot(i, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Stratification, group = Stratification))+geom_line(aes(colour = Stratification, group = Stratification))}) 
+
+# plot as grid in 1 columns
+cowplot::plot_grid(plotlist = ggList, ncol = 3,
+                   align = 'v', labels = levels(brfs_national_obesity_filtered$StratificationCategory1))
+
+```
+
