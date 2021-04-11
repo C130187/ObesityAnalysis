@@ -374,8 +374,73 @@ questions_yesnoq <- c(questions_nutrition_yesnoq,questions_pa_yesnoq,questions_t
 
 pe_2018_yesnoq <- pe_2018_states %>%
   filter(QuestionRenamed %in% questions_yesnoq) %>%
-  group_by(LocationAbbr,QuestionRenamed) %>%
-  summarise(n_policies = sum(Data_Value=="Yes"))
+  group_by(LocationAbbr,Class) %>%
+  summarise(n_policies = sum(Data_Value=="Yes")) 
+
+library(tidyr)
+
+pe_2018_yesnoq_wider <- pe_2018_yesnoq %>% pivot_wider(names_from = Class, values_from = n_policies)
+
+pe_2018_yesnoq_wider$Total <- pe_2018_yesnoq_wider$`Fruits and Vegetables` + pe_2018_yesnoq_wider$`Physical Activity`+
+  pe_2018_yesnoq_wider$`Television Viewing`
+
+pe_2018_yesnoq_wider_pivot <- pivot_longer(pe_2018_yesnoq_wider, `Fruits and Vegetables`:`Total`, names_to = "Class", values_to = "n_policies")
+
+pe_2018_yesnoq_wider_pivot[is.na(pe_2018_yesnoq_wider_pivot)] <- 0
+
+library(statebins)
+
+# pe_2018_yesnoq_wider_pivot$state <- pe_2018_yesnoq_wider_pivot$LocationAbbr
+# 
+# statebins(pe_2018_yesnoq, value_col="n_policies", name = "n_policies") +
+#   theme_statebins(legend_position="right")
+
+sb1 <- ggplot(pe_2018_yesnoq_wider_pivot, aes(state=LocationAbbr, fill=n_policies)) +
+        geom_statebins() +
+        coord_equal() +
+        viridis::scale_fill_viridis(
+        name = "Number of policies ", limits=c(0,6), breaks=0:6, option = "magma", direction = -1
+        ) +
+        facet_wrap(~Class) +
+        labs(title="Number of policies for good Nutrition, Physicial Activity and Television Viewing ") +
+        theme(plot.title=element_text(size=16, hjust=0)) +
+        theme(plot.margin = margin(30,30,30,30))
+
+plot(sb1)
+
+```
+```{r}
+
+sb1_overall <- ggplot(pe_2018_yesnoq, aes(state=state, fill=n_policies)) +
+        geom_statebins() +
+        coord_equal() +
+        viridis::scale_fill_viridis(
+        name = "Number of policies ", limits=c(0,5), breaks=0:5, option = "magma", direction = -1
+        ) +
+        labs(title="Total Number of policies for good Nutrition, Physicial Activity and Television Viewing ") +
+        #theme_statebins(base_family = font_ps) +
+        theme(plot.title=element_text(size=16, hjust=0)) +
+        theme(plot.margin = margin(30,30,30,30))
+
+plot(sb1_overall)
+
+```
+```{r}
+
+pe_2018_breastfeeding_questions <- pe_2018_states %>%
+  filter(Class=="Breastfeeding")%>%
+  select(QuestionRenamed) %>% distinct()
+
+pe_2018_states$Data_Value <- as.numeric(pe_2018_states$Data_Value)
+
+pe_2018_breastfeeding_questions_data <- pe_2018_states %>%
+  filter(QuestionRenamed %in% pe_2018_breastfeeding_questions$QuestionRenamed)%>%
+  group_by(LocationAbbr) %>%
+  summarise(avg_brf = mean(Data_Value))
+
+pe_2018_breastfeeding_questions_data[is.na(pe_2018_breastfeeding_questions_data)] <- 0
+  
 
 
 ```
+
