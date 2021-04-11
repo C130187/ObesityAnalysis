@@ -6,6 +6,7 @@
 
 library(dplyr)
 library(ggplot2)
+library(forcats)
 
 brfs <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
 
@@ -18,7 +19,7 @@ brfs_national$YearStart <- as.factor(brfs_national$YearStart)
 
 brfs_national$Question <- as.factor(brfs_national$Question)
 brfs_national$QuestionRenamed <- brfs_national$Question
-levels(brfs_national$QuestionRenamed) <- c("Overweight", "Obese", "150 mins Moderate", "150 min Moderate & Muscle Strengthening", "300 min Moderate", "Muscle Strengthening", "No Activity", "No Fruit Comsumption", "No Vegetable Concumption")
+levels(brfs_national$QuestionRenamed) <- c("Overweight", "Obese", "150 mins Moderate", "150 min Moderate & Muscle Strengthening", "300 min Moderate", "Muscle Strengthening", "No Activity", "No Fruit Comsumption", "No Vegetable Consumption")
 
 brfs_national <- brfs %>%
   filter(LocationDesc=="National")
@@ -108,3 +109,273 @@ cowplot::plot_grid(plotlist = ggList, ncol = 3,
 
 ```
 
+``` {r}
+
+questions <- c("Obese","No Activity","No Fruit Comsumption", "No Vegetable Consumption")
+
+# Filter year and questions first
+brfs_2019_filtered <-brfs_national %>% 
+  filter(YearStart==2019 & QuestionRenamed %in% questions) %>% 
+  select(YearStart,Class,StratificationCategory1,Stratification1,QuestionRenamed,Data_Value) 
+
+brfs_2019_filtered$Class <- as.factor(brfs_2019_filtered$Class)
+
+brfs_2019_filtered$Class <- relevel(brfs_2019_filtered$Class,"Obesity / Weight Status")
+
+brfs_2019_filtered$Class2 <- as.factor(brfs_2019_filtered$Class)
+levels(brfs_2019_filtered$Class2) <- c("Obesity Status","No Fruit/Vegetable Consumption Daily","No Physical Activity Weekly")
+
+brfs_2019_filtered$Stratification1 <- as.factor(brfs_2019_filtered$Stratification1)
+
+# Filter for race data
+
+brfs_2019_race <-brfs_2019_filtered %>% 
+  filter(StratificationCategory1=="Race/Ethnicity") %>% 
+  group_by(Class2,Stratification1) %>%
+  summarise(mean_data_value = mean(Data_Value))
+# %>% 
+#   ungroup() %>%
+#   group_by(Class) %>%
+#   arrange(desc(mean_data_value), .by_group = TRUE)
+
+
+brfs_2019_race.mean = brfs_2019_race %>% 
+  group_by(Class2) %>% 
+  mutate(ymean = mean(mean_data_value))
+
+cols <- c("Class Average %"="red")
+
+barplot <-  ggplot(brfs_2019_race,aes(x=Stratification1, y=mean_data_value))+
+  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_errorbar(data=brfs_2019_race.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
+               size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
+  scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
+  ylab("Percentage") +
+  ggtitle("Percentage across different Race/Ethnicity Groups in 2019")
+
+plot(barplot)
+
+# For Asians, the obesity status is the least.
+# The levels of lack of fruit/vegetable consumption and lack of physical activity are not that much higher for Hawaiian/Pacific Island people even though their obesity status is the highest. This could be due to genetic or other factors, not captured in the available data.
+# For 2 or more races, American Indian/Alaska Native, Non-Hispanic black -> they have less nutrition and physical activity than others, and also high obesity status.
+
+```
+
+
+``` {r}
+
+brfs_2019_income <-brfs_2019_filtered %>% 
+  filter(StratificationCategory1=="Income") %>% 
+  group_by(Class2,Stratification1) %>%
+  summarise(mean_data_value = mean(Data_Value))
+
+brfs_2019_income$Stratification1 <- as.factor(brfs_2019_income$Stratification1)
+brfs_2019_income$Stratification1 <- relevel(brfs_2019_income$Stratification1,"Less than $15,000")
+
+brfs_2019_income.mean = brfs_2019_income %>% 
+  group_by(Class2) %>% 
+  mutate(ymean = mean(mean_data_value))
+
+barplot <-  ggplot(brfs_2019_income,aes(x=Stratification1, y=mean_data_value))+
+  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_errorbar(data=brfs_2019_income.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
+               size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
+  scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
+  ylab("Percentage") +
+  ggtitle("Percentage across different Income Groups in 2019")
+
+plot(barplot)
+
+# Overall decreasing trend..as income increases, more physically activity, more nutritious food, and more people with better obesity status
+
+```
+
+``` {r}
+
+brfs_2019_education <-brfs_2019_filtered %>% 
+  filter(StratificationCategory1=="Education") %>% 
+  group_by(Class2,Stratification1) %>%
+  summarise(mean_data_value = mean(Data_Value))
+
+brfs_2019_education.mean = brfs_2019_education %>% 
+  group_by(Class2) %>% 
+  mutate(ymean = mean(mean_data_value))
+
+brfs_2019_education$Stratification1 <- fct_relevel(brfs_2019_education$Stratification1, "Less than high school", after = 1)
+
+brfs_2019_education$Stratification1 <- fct_relevel(brfs_2019_education$Stratification1, "College graduate", after = Inf)
+
+barplot <-  ggplot(brfs_2019_education,aes(x=Stratification1, y=mean_data_value))+
+  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_errorbar(data=brfs_2019_education.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
+               size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
+  scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
+  ylab("Percentage") +
+  ggtitle("Percentage across different Education Groups in 2019")
+
+plot(barplot)
+
+# Overall decreasing trend..as education level increases, more physically activity, more nutritious food, and more people with better obesity status
+
+```
+``` {r}
+
+brfs_2019_age <-brfs_2019_filtered %>% 
+  filter(StratificationCategory1=="Age (years)") %>% 
+  group_by(Class2,Stratification1) %>%
+  summarise(mean_data_value = mean(Data_Value))
+
+brfs_2019_age.mean = brfs_2019_age %>% 
+  group_by(Class2) %>% 
+  mutate(ymean = mean(mean_data_value))
+
+barplot <-  ggplot(brfs_2019_age,aes(x=Stratification1, y=mean_data_value))+
+  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_errorbar(data=brfs_2019_age.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
+               size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
+  scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
+  ylab("Percentage") +
+  ggtitle("Percentage across different Age Groups (years) in 2019")
+
+plot(barplot)
+
+# Middle bars are highest..for lower age group obesity is least - although fruit/vegetable consumption is low , physical activity is higher. As age increases, as expected, the phy activity is the least, although overall nutrition and obesity status are better than middle groups.
+
+```
+``` {r}
+
+brfs_2019_gender <-brfs_2019_filtered %>% 
+  filter(StratificationCategory1=="Gender") %>% 
+  group_by(Class2,Stratification1) %>%
+  summarise(mean_data_value = mean(Data_Value))
+
+brfs_2019_gender.mean = brfs_2019_gender %>% 
+  group_by(Class2) %>% 
+  mutate(ymean = mean(mean_data_value))
+
+barplot <-  ggplot(brfs_2019_gender,aes(x=Stratification1, y=mean_data_value))+
+  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_errorbar(data=brfs_2019_gender.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
+               size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
+  scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
+  ylab("Percentage") +
+  ggtitle("Percentage split by Gender in 2019")
+
+plot(barplot)
+
+# No noticeable trend
+
+```
+``` {r}
+
+pe$Question <- as.factor(pe$Question)
+pe$QuestionRenamed <- pe$Question
+levels(pe$QuestionRenamed) <- c("mPINC Score","State-Level Food Policy Council","Farmers Market Count" , "Food Hubs Count", "IBCLCs Count","La Leche Leaders Count", "Local Food Policy Council Count", "Percent of SNAP Farmers Markets", "Percent of WIC Farmers Markets" , "Percent of BFHI births", "Percent Sec Schools Allowing Soda Purchase", "Percent Sec Schools Allowing Sports Drink", "Percent of Sec Schools Offering Salad Bar", "Percent People Living 1/2 Mile of a Park", "Percent of Youth with Activity Areas Nearby", "State-National Alignment on Avoiding Sugar Regulations",
+"State-National Alignment on Restricting Media Age >2 yrs", "State-National Alignment on Physical Activity for Preschoolers" , "State-National Alignment on Prohibiting Media Age <=2 yrs","State-National Alignment on Fruit Serving  Regulations","State-National Alignment on Vegetable Serving Regulations","Complete Streets Policy","State Guidance on Policies for School Activity Facilities","State Guidance on Policies for School Recess","State Guidance on Policies for Time Spent in Activity During PE Class","State Guidance on Commuting to School by Walk or Bike","State-Level Farm to School/Preschool Policy")
+
+pe_2018_states <- pe %>% filter(YearStart==2018 & !LocationAbbr=="US")
+
+# Nutrition Histogram
+questions_nutrition_yesnoq <- c("State-Level Food Policy Council","State-National Alignment on Fruit Serving  Regulations","State-National Alignment on Vegetable Serving Regulations","State-Level Farm to School/Preschool Policy")
+pe_2018_nutrition_yesnoq <- pe_2018_states %>%
+  filter(Class=="Fruits and Vegetables" & QuestionRenamed %in% questions_nutrition_yesnoq) %>%
+  group_by(LocationAbbr) %>%
+  summarise(n_policies = sum(Data_Value=="Yes"))
+
+hist <- ggplot(pe_2018_nutrition_yesnoq, aes(x= n_policies)) + 
+  geom_histogram(binwidth=1,center=1, colour = "#80593D", fill = "lightblue", closed="left") +
+  xlab("Number of Policies Exisiting for Better Nutrition at the State-Level")+
+  ylab("Number of States")+
+  ggtitle("Histogram for Number of Policies Exisiting for Better Nutrition at the State-Level in 2018") +
+  scale_x_continuous(breaks = seq(0 , 5 , by=1)) +
+  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=2.5) 
+
+plot(hist)
+
+# Distribution of counts of Local Food Policy Councils across States
+pe_2018_nutrition_localpolicycouncil_states <- pe_2018_states %>%
+  filter(Class=="Fruits and Vegetables" & QuestionRenamed =="State-Level Food Policy Council" 
+         & Data_Value=="Yes") %>%
+  select(LocationAbbr) %>%
+  distinct()
+
+pe_2018_nutrition_localpolicycouncil_counts <- pe_2018_states %>%
+  filter(LocationAbbr %in% pe_2018_nutrition_localpolicycouncil_states$LocationAbbr & QuestionRenamed=="Local Food Policy Council Count") %>%
+  select(LocationAbbr,Data_Value) %>%
+  distinct()
+
+min(pe_2018_nutrition_localpolicycouncil_counts$Data_Value) #0
+max(pe_2018_nutrition_localpolicycouncil_counts$Data_Value) #8 
+
+pe_2018_nutrition_localpolicycouncil_counts$Data_Value <- as.numeric(pe_2018_nutrition_localpolicycouncil_counts$Data_Value)
+
+hist_localpolicycounts <- ggplot(pe_2018_nutrition_localpolicycouncil_counts, aes(x= Data_Value)) + 
+  geom_histogram(binwidth=5,center=2.5, colour = "#80593D", fill = "lightblue") +
+  xlab("Number of Food Policy Councils")+
+  ylab("Number of States")+
+  ggtitle("Distribution of Number of Local Food Policy Counts per State in 2018") +
+  scale_x_continuous(breaks = seq(0 , 30 , by=5)) +
+  stat_bin(binwidth=5,center=2.5,geom="text", aes(label=..count..), vjust=-1.5, size=2.5) 
+
+plot(hist_localpolicycounts)
+
+```
+
+``` {r}
+
+# Physical Activity
+questions_pa_yesnoq <- c("State-National Alignment on Physical Activity for Preschoolers","Complete Streets Policy",
+                         "State Guidance on Policies for School Activity Facilities","State Guidance on Policies for School Recess","State Guidance on Policies for Time Spent in Activity During PE Class","State Guidance on Commuting to School by Walk or Bike")
+pe_2018_pa_yesnoq <- pe_2018_states %>%
+  filter(Class=="Physical Activity" & QuestionRenamed %in% questions_pa_yesnoq) %>%
+  group_by(LocationAbbr) %>%
+  summarise(n_policies = sum(Data_Value=="Yes"))
+
+hist2 <- ggplot(pe_2018_pa_yesnoq, aes(x= n_policies)) + 
+  geom_histogram(binwidth=1,center=1, colour = "#80593D", fill = "lightblue", closed="left") +
+  xlab("Number of Policies Exisiting to Encourage Physical Activity at the State-Level")+
+  ylab("Number of States")+
+  ggtitle("Histogram for Number of Policies Exisiting to Encourage Physical Activity at the State-Level in 2018") +
+  scale_x_continuous(breaks = seq(0 , 7 , by=1)) +
+  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=2.5) 
+
+plot(hist2)
+```
+
+``` {r}
+
+# Television
+questions_tel_yesnoq <- c("State-National Alignment on Restricting Media Age >2 yrs","State-National Alignment on Prohibiting Media Age <=2 yrs")
+pe_2018_tel_yesnoq <- pe_2018_states %>%
+  filter(Class=="Television Viewing" & QuestionRenamed %in% questions_tel_yesnoq) %>%
+  group_by(LocationAbbr) %>%
+  summarise(n_policies = sum(Data_Value=="Yes"))
+
+hist3 <- ggplot(pe_2018_tel_yesnoq, aes(x= n_policies)) + 
+  geom_histogram(binwidth=1,center=1, colour = "#80593D", fill = "lightblue", closed="left") +
+  xlab("Number of Policies Exisiting to Restrict Telivision Viewing at the State-Level")+
+  ylab("Number of States")+
+  ggtitle("Histogram for Number of Policies Exisiting to Restrict Telivision Viewing at the State-Level in 2018") +
+  scale_x_continuous(breaks = seq(0 , 7 , by=1)) +
+  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=2.5) 
+
+plot(hist3)
+```
+
+``` {r}
+
+# All policies for yes or no per state
+questions_yesnoq <- c(questions_nutrition_yesnoq,questions_pa_yesnoq,questions_tel_yesnoq)
+
+pe_2018_yesnoq <- pe_2018_states %>%
+  filter(QuestionRenamed %in% questions_yesnoq) %>%
+  group_by(LocationAbbr,QuestionRenamed) %>%
+  summarise(n_policies = sum(Data_Value=="Yes"))
+
+
+```
