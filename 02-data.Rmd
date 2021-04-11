@@ -1,3 +1,49 @@
 # Data sources
 
+The starting point for choosing our datasets came from reading the article mentioned in the Introduction section. 
+We also considered looking at Data from the NYC Health website, but decided to go ahead with data from Centers for Disease Control and Prevention as it provided more granular data, all across the US. 
 
+## Datasets
+
+The datasets are from Centre for Disease Control’s website. They provide national and state
+specific data on obesity, nutrition, physical activity.
+
+
+## Dataset links and description
+
+### 1. https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-
+Activity-and-Obesity-Behavioral/hn4x-zwk7
+
+**Description**: This dataset includes data on policy and environmental supports for physical
+activity, diet etc.
+
+**Number of records**: 76.4K
+
+**Types and range of variables**:
+Year : 2011-2018
+LocationAbbr : US state abbreviations and just "US" for the national level. Also includes overseas US territories like Puerto Rico, Virgin Islands etc.
+Class: Obesity Status, Nutrition Status, Physical Activity Status
+Questions: Questions pertaining to a particular class
+Data_Value: Value pertaining to corresponding Question 
+StratificationCategory1 : Age(years) , Education, Gender, Income, Race/Ethnicity, Total
+Stratification1: Subcategories within each Stratification1, For example, for the StratificationCategory1 = "Gender", this will include "Female" and "Male" subcategories
+
+**Issues discovered**: Within the Class "Nutrition Status", data was only present for the years 2017 and 2019. This made it impossible to use this Class for a meaningful time-series analysis.
+
+### 2. https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-
+Activity-and-Obesity-Policy-and/k8w5-7ju6
+
+**Description**: This dataset includes data on adult's diet, physical activity, and weight status
+from Behavioral Risk Factor Surveillance System.
+
+**Number of records**: 6.642 K
+
+**Types and range of variables**:
+Year : 2002-2020
+LocationAbbr : US state abbreviations and just "US" for the national level. Also includes overseas US territories like Puerto Rico, Virgin Islands etc.
+Class: Breastfeeding Support, Nutrition Support, Physical Activity Support, Sugar Drinks Support, Television Viewing Support
+Questions: Questions pertaining to a particular class
+Data_Value: Value pertaining to corresponding Question. These maybe numerical or boolean in nature. 
+StratificationCategory1 : Total
+
+**Issues discovered**: Even though the dataset gives the impression of providing data for 18 years, it was very sparsely populated for most years i.e. only 10% of the total records belong to the years 2002-2009 and 2020.

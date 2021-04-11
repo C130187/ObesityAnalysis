@@ -24,7 +24,7 @@
 <meta name="author" content="SALONI GUPTA AJAY KUMAR UNI: SG3910, YOSHA SINGH TOMAR UNI: YT2741" />
 
 
-<meta name="date" content="2021-04-06" />
+<meta name="date" content="2021-04-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -71,7 +71,15 @@
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a></li>
+<li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="data-sources.html"><a href="data-sources.html#datasets"><i class="fa fa-check"></i><b>2.1</b> Datasets</a></li>
+<li class="chapter" data-level="2.2" data-path="data-sources.html"><a href="data-sources.html#dataset-links-and-description"><i class="fa fa-check"></i><b>2.2</b> Dataset links and description</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="data-sources.html"><a href="data-sources.html#httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical-"><i class="fa fa-check"></i><b>2.2.1</b> 1. <span>https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-</span></a></li>
+<li class="chapter" data-level="2.2.2" data-path="data-sources.html"><a href="data-sources.html#httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical--1"><i class="fa fa-check"></i><b>2.2.2</b> 2. <span>https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-</span></a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a></li>
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a></li>
@@ -98,7 +106,48 @@
             <section class="normal" id="section-">
 <div id="data-sources" class="section level1" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Data sources</h1>
+<p>The starting point for choosing our datasets came from reading the article mentioned in the Introduction section.
+We also considered looking at Data from the NYC Health website, but decided to go ahead with data from Centers for Disease Control and Prevention as it provided more granular data, all across the US.</p>
+<div id="datasets" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Datasets</h2>
+<p>The datasets are from Centre for Disease Control’s website. They provide national and state
+specific data on obesity, nutrition, physical activity.</p>
+</div>
+<div id="dataset-links-and-description" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Dataset links and description</h2>
+<div id="httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical-" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> 1. <a href="https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-" class="uri">https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-</a></h3>
+<p>Activity-and-Obesity-Policy-and/k8w5-7ju6</p>
+<p><strong>Description</strong>: This dataset includes data on policy and environmental supports for physical
+activity, diet etc.</p>
+<p><strong>Number of records</strong>: 76.4K</p>
+<p><strong>Types and range of variables</strong>:
+Year : 2011-2018
+LocationAbbr : US state abbreviations and just “US” for the national level. Also includes overseas US territories like Puerto Rico, Virgin Islands etc.
+Class: Obesity Status, Nutrition Status, Physical Activity Status
+Questions: Questions pertaining to a particular class
+Data_Value: Value pertaining to corresponding Question
+StratificationCategory1 : Age(years) , Education, Gender, Income, Race/Ethnicity, Total
+Stratification1: Subcategories within each Stratification1, For example, for the StratificationCategory1 = “Gender”, this will include “Female” and “Male” subcategories</p>
+<p><strong>Issues discovered</strong>: Within the Class “Nutrition Status”, data was only present for the years 2017 and 2019. This made it impossible to use this Class for a meaningful time-series analysis.</p>
+</div>
+<div id="httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical--1" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> 2. <a href="https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-" class="uri">https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-</a></h3>
+<p>Activity-and-Obesity-Behavioral/hn4x-zwk7</p>
+<p><strong>Description</strong>: This dataset includes data on adult’s diet, physical activity, and weight status
+from Behavioral Risk Factor Surveillance System.</p>
+<p><strong>Number of records</strong>: 6.642 K</p>
+<p><strong>Types and range of variables</strong>:
+Year : 2002-2020
+LocationAbbr : US state abbreviations and just “US” for the national level. Also includes overseas US territories like Puerto Rico, Virgin Islands etc.
+Class: Breastfeeding Support, Nutrition Support, Physical Activity Support, Sugar Drinks Support, Television Viewing Support
+Questions: Questions pertaining to a particular class
+Data_Value: Value pertaining to corresponding Question. These maybe numerical or boolean in nature.
+StratificationCategory1 : Total</p>
+<p><strong>Issues discovered</strong>: Even though the dataset gives the impression of providing data for 18 years, it was very sparsely populated for most years i.e. only 10% of the total records belong to the years 2002-2009 and 2020.</p>
 
+</div>
+</div>
 </div>
             </section>
 

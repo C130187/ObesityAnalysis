@@ -1,0 +1,53 @@
+```{r}
+
+
+library(dplyr)
+library(ggplot2)
+library(choroplethr)
+library(choroplethrMaps)
+
+brfs <- read.csv("data/raw/Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
+
+brfs_2019_state <- brfs %>%
+    filter(YearStart==2019 & 
+           Question=="Percent of adults aged 18 years and older who have obesity" &
+           !(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="US") &
+           StratificationCategory1=="Total")
+
+df_brfs <- brfs_2019_state %>% as.data.frame() %>% 
+    transmute(region = tolower(LocationDesc), value = Data_Value)
+
+state_choropleth(df_brfs,
+                 title = "State Obesity Percent, 2019",
+                 legend = "Percent Obese")
+
+```
+
+```{r}
+
+library(geofacet)
+
+brfs_state <- brfs %>%
+    filter( Question=="Percent of adults aged 18 years and older who have obesity" &
+               !(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="US") &
+               StratificationCategory1=="Total")
+
+ggplot(brfs_state, aes(YearStart, Data_Value)) +
+    geom_line() +
+    facet_geo(~ LocationAbbr, grid = "us_state_grid2") +
+    scale_x_continuous(labels = function(x) paste0("'", substr(x, 3, 4))) +
+    ylab("percent Obese (%)")
+
+
+```
+
+```{r}
+
+library(statebins)
+data(USArrests)
+
+USArrests$state <- rownames(USArrests)
+statebins(USArrests, value_col="Assault", name = "Assault") +
+  theme_statebins(legend_position="right")
+
+```

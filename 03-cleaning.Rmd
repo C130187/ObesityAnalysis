@@ -1,53 +1,130 @@
 # Data transformation
 
+We exported the datasets in csv format directly from the website links mentioned in Section 2.2.
+Following describe the steps taken to preprocess the data for use in our analysis.
+
+1. Due to issues mentioned in 2.2, we filtered the data for the years 2011-2019 only.
+2. Within each dataset, we discovered a number of variables that either provided redudant information or were out of the scope of our analysis. We removed these.
+3. Lastly, we subsetted the data to only include National level and US State-level data, excluding overseas US territories like Puerto Rico. 
+
+## Dataset 1 Obesity-Behavioral
+
+### Filtering of columns:
+
+**Redundant Columns**:
+1. YearStart and YearEnd columns contained exactly the same values. We retained only YearStart.
+2. Data_Value_Type contains no useful information. All values are "Value". 
+3. Data_Value and Data_Value_Alt columns contained exactly the same values. We retained only Data_Value.
+4. GeoLocation contains location information already captured in LocationAbbr and LocationDesc.
+5. Topic and Class contained exactly the same value. We retained only Class.
+
+Note: Together, the columns - "Total", "Age(years)", "Education", "Gender", "Income", "Race/Ethnicity" contain the same information as present in columns "StratificationCategory1" and "Stratification1". However, we retained these duplicate columns to enable use in visualizations conforming to etiher pivot or unpivoted data.
+
+**Columns with mostly NA/empty values**:
+1. Data_Value_Unit
+2. Data_Value_Footnote
+3. Data_Value_Footnote_Symbol
+
+**Columns which were not meaningful for our analysis**:
+1. Datasource
+2. Low_Confidence_Limit
+3. High_Confidence_Limit
+4. Sample Size
+5. ClassID
+6. TopicID
+7. QuestionID
+8. DataValueTypeID
+9. LocationID
+10. StratificationCategoryID1
+11. StratificationID1
+
+### Column transformations:
+
+1. Converted columns "YearStart","Class", "Question", "StratificationCategory1" and "Stratification1" to factors.
+2. Created a new column "QuestionRenamed" from "Question" with shorter question descriptions.
+3. Convert "Data_Value" to numeric.
+
 ```{r}
 
 library(dplyr)
-library(ggplot2)
 
-brfs <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
+brfs <- read.csv("data/raw/Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
 
-pe <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Policy_and_Environmental_Data.csv")
+# Keep only columns we are interested in
 
-View(
-  brfs %>% filter(Data_Value_Footnote=="Data not available because sample size is insufficient."))
+brfs_filtered <- brfs %>%
+  select(YearStart, LocationAbbr, LocationDesc, Class, Question, Data_Value, Total, Age.years., Education, Gender, Income,
+         Race.Ethnicity, StratificationCategory1, Stratification1) %>%
+  filter(!(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI")) 
 
-brfs_national <- brfs %>%
-  filter(LocationDesc=="National")
+# Conversion of categorical variables to factors
+brfs_filtered$YearStart <- as.factor(brfs_filtered$YearStart)
+brfs_filtered$Class <- as.factor(brfs_filtered$Class)
+brfs_filtered$StratificationCategory1 <- as.factor(brfs_filtered$StratificationCategory1)
+brfs_filtered$Stratification1 <- as.factor(brfs_filtered$Stratification1)
 
-brfs_national_questions <- brfs_national %>%
-  group_by(Class) %>%
-  select(Class,Question) %>%
-  distinct()
+# Convert Data_Value to numeric
+brfs_filtered$Data_Value <- as.numeric(brfs_filtered$Data_Value)
 
-View(brfs_national %>% 
-  filter(YearStart!=YearEnd)) # They are the same
+# Create new column QuestionRenamed from Question
+brfs_filtered$QuestionRenamed <- as.factor(brfs_filtered$Question)
+levels(brfs_filtered$QuestionRenamed) <- c("Overweight", "Obese", "150 mins Moderate", "150 min Moderate & Muscle Strengthening", "300 min Moderate", "Muscle Strengthening", "No Activity", "No Fruit Consumption", "No Vegetable Consumption")
 
-brfs_national$YearStart <- as.factor(brfs_national$YearStart)
+write.csv(brfs_filtered,"data/clean/BRFS_Filtered.csv", row.names = FALSE)
 
-questions <- unique(brfs_national$Question)
+```
 
-brfs_national_obesity <- brfs_national %>% filter(Class=="Obesity / Weight Status" & Total=="Total")
+## Dataset 2 Obesity-Policy-Support
 
-# g1 <- ggplot(brfs_national_obesity, aes(fill=Question, y=Data_Value, x=YearStart))+ geom_bar(position="dodge", stat="identity")
-# plot(g1)
+### Filtering of columns:
 
-g_ob <- ggplot(brfs_national_obesity, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Question, group = Question))+geom_line(aes(colour = Question, group = Question)) 
-plot(g_ob)
+**Redundant Columns**:
+1. YearStart and YearEnd columns mostly contained the same values, except for 52 rows (0.7% of total data), which contained a one year differed. We retained only YearStart.
+2. Data_Value_Type contains no useful information. All values are "Value". 
+3. Data_Value and Data_Value_Alt columns contained redundant information, with just slight difference in notation - For example, Yes in Data_Value was mapped to a specific number in Data_Value_Alt. We retained only Data_Value.
+4. GeoLocation contains location information already captured in LocationAbbr and LocationDesc.
+5. Topic and Class contained exactly the same value. We retained only Class.
+6. StratificationCategory1, Stratification1, StratificationCategoryID1, StratificationID1, Total all contain the same value = "Total". We removed all.
 
-brfs_national_nutrition <- brfs_national %>% filter(Class=="Fruits and Vegetables" & Total=="Total")
+**Columns with mostly NA/empty values**:
+1. Data_Value_Unit
+2. Data_Value_Footnote
+3. Data_Value_Footnote_Symbol
 
-g_nut <- ggplot(brfs_national_nutrition, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Question, group = Question))+geom_line(aes(colour = Question, group = Question)) 
-plot(g_nut)
+**Columns which were not meaningful for our analysis**:
+1. Datasource
+2. ClassID
+3. TopicID
+4. QuestionID
+5. DataValueTypeID
+6. LocationID
 
-brfs_national_phy <- brfs_national %>% filter(Class=="Physical Activity" & Total=="Total")
+### Column transformation:
 
-library(scales)
-library(stringr)
+1. Converted columns "YearStart","Class" and "Question" to factors.
+2. Created a new column "QuestionRenamed" from "Question" with shorter question descriptions.
 
-g_phy <- ggplot(brfs_national_phy, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Question, group = Question))+geom_line(aes(colour = Question, group = Question)) 
-plot(g_phy + scale_colour_discrete(labels = function(x) str_wrap(x, width = 20)))
+```{r}
 
+library(dplyr)
 
+pe <- read.csv("data/raw/Nutrition__Physical_Activity__and_Obesity_-_Policy_and_Environmental_Data.csv")
+
+# Keep only columns we are interested in
+
+pe_filtered <- pe %>%
+  select(YearStart, LocationAbbr, LocationDesc, Class, Question, Data_Value) %>%
+  filter((YearStart>=2011 & YearStart <=2019) & !(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI")) 
+
+# Conversion of categorical variables to factors
+pe_filtered$YearStart <- as.factor(pe_filtered$YearStart)
+pe_filtered$Class <- as.factor(pe_filtered$Class)
+
+# Create new column QuestionRenamed from Question
+pe_filtered$QuestionRenamed <- as.factor(pe_filtered$Question)
+levels(pe_filtered$QuestionRenamed) <- c("mPINC Score","State-Level Food Policy Council","Farmers Market Count" , "Food Hubs Count", "IBCLCs Count","La Leche Leaders Count", "Local Food Policy Council Count", "Percent of SNAP Farmers Markets", "Percent of WIC Farmers Markets" , "Percent of BFHI births", "Percent Sec Schools Allowing Soda Purchase", "Percent Sec Schools Allowing Sports Drink", "Percent of Sec Schools Offering Salad Bar", "Percent People Living 1/2 Mile of a Park", "Percent of Youth with Activity Areas Nearby", "State-National Alignment on Avoiding Sugar Regulations",
+"State-National Alignment on Restricting Media Age >2 yrs", "State-National Alignment on Physical Activity for Preschoolers" , "State-National Alignment on Prohibiting Media Age <=2 yrs","State-National Alignment on Fruit Serving  Regulations","State-National Alignment on Vegetable Serving Regulations","Complete Streets Policy","State Guidance on Policies for School Activity Facilities","State Guidance on Policies for School Recess","State Guidance on Policies for Time Spent in Activity During PE Class","State Guidance on Commuting to School by Walk or Bike","State-Level Farm to School/Preschool Policy")
+
+write.csv(pe_filtered,"data/clean/PE_Filtered.csv", row.names = FALSE)
 
 ```

@@ -1,0 +1,162 @@
+```{r}
+
+
+library(dplyr)
+library(ggplot2)
+library(choroplethr)
+library(choroplethrMaps)
+
+brfs <- read.csv("data/clean/BRFS_Filtered.csv")
+pe <- read.csv("data/clean/PE_Filtered.csv")
+
+brfs_2019_state_obs <- brfs %>%
+    filter(YearStart==2019 & 
+           Question=="Percent of adults aged 18 years and older who have obesity" &
+           !(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI"| LocationAbbr=="US") &
+           StratificationCategory1=="Total")
+
+df_brfs_obs <- brfs_2019_state_obs %>% as.data.frame() %>% 
+    transmute(region = tolower(LocationDesc), value = Data_Value)
+
+state_choropleth(df_brfs_obs,
+                 title = "State Obesity Percent, 2019",
+                 legend = "Percent Obese")
+
+```
+
+```{r}
+brfs_2019_state_phy <- brfs %>%
+    filter(YearStart==2019 & 
+           Question=="Percent of adults who engage in no leisure-time physical activity" &
+           !(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI"| LocationAbbr=="US") &
+           StratificationCategory1=="Total")
+
+df_brfs_phy <- brfs_2019_state_phy %>% as.data.frame() %>% 
+    transmute(region = tolower(LocationDesc), value = Data_Value)
+
+state_choropleth(df_brfs_phy,
+                 title = "No leisure-time physical activity, 2019",
+                 legend = "Percent of adults not engaged in physical activity")
+```
+
+
+```{r}
+brfs_2019_state_nutrition <- brfs %>%
+    filter(YearStart==2019 & 
+           (Question=="Percent of adults who report consuming fruit less than one time daily" |
+              Question=="Percent of adults who report consuming vegetables less than one time daily") &
+           !(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI"| LocationAbbr=="US") &
+           StratificationCategory1=="Total")
+
+brfs_2019_state_nutrition <- brfs_2019_state_nutrition %>% 
+                                    group_by(LocationDesc) %>% 
+                                    summarise(mean_data_value = mean(Data_Value))
+
+df_brfs_nutrition <- brfs_2019_state_nutrition %>% as.data.frame() %>% 
+    transmute(region = tolower(LocationDesc), value = mean_data_value)
+
+state_choropleth(df_brfs_nutrition,
+                 title = "Lack of Proper Nutrition, 2019",
+                 legend = "Percent of adults not consuming fuits/vegetables")
+```
+```{r}
+
+questions <- c("Percent of adults aged 18 years and older who have obesity",
+               "Percent of adults who engage in no leisure-time physical activity",
+               "Percent of adults who report consuming fruit less than one time daily",
+               "Percent of adults who report consuming vegetables less than one time daily")
+
+brfs_2019_state_all <- brfs %>%
+    filter(YearStart==2019 & 
+           (Question %in% questions) &
+           !(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI"| LocationAbbr=="US") &
+           StratificationCategory1=="Total")
+
+brfs_2019_state_all <- brfs_2019_state_all %>% 
+                        group_by(LocationDesc, Class) %>% 
+                            summarise(mean_data_value = mean(Data_Value))
+
+ggplot(brfs_2019_state_all, aes(mean_data_value, fct_reorder2(LocationDesc, Class=="Obesity / Weight Status", mean_data_value, .desc=FALSE), color=Class)) +
+  geom_point() +
+  #scale_color_manual(values = c("blue", "red")) +
+  xlab("Percent of People") +
+    ylab("State") +
+    ggtitle("Percent of Obesity And Its Factos Per State")
+
+```
+
+```{r}
+
+library(geofacet)
+
+brfs_state <- brfs %>%
+    filter( Question=="Percent of adults aged 18 years and older who have obesity" &
+               !(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI"| LocationAbbr=="US") &
+               StratificationCategory1=="Total")
+
+ggplot(brfs_state, aes(YearStart, Data_Value)) +
+    geom_line() +
+    facet_geo(~ LocationAbbr, grid = "us_state_grid2") +
+    scale_x_continuous(labels = function(x) paste0("'", substr(x, 3, 4))) +
+    ylab("percent Obese (%)")
+```
+
+```{r}
+library(tidyr)
+
+questions <- c("Percent of adults aged 18 years and older who have obesity",
+               "Percent of adults who engage in no leisure-time physical activity")
+
+brfs_filtered <-brfs %>% 
+  filter(!(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI"| LocationAbbr=="US") &
+           StratificationCategory1=="Total" &
+           Question %in% questions) %>% 
+  select(YearStart,LocationDesc,Question,Data_Value) 
+
+t <- pivot_wider(brfs_filtered, names_from=Question, values_from=Data_Value)
+
+t <- t %>% 
+     rename(
+         "Obesity" = "Percent of adults aged 18 years and older who have obesity",
+         "No_Physical_Activity" = "Percent of adults who engage in no leisure-time physical activity"
+     )
+
+ggplot(t, aes(x=YearStart)) +
+     geom_line(aes(y = Obesity, color = "Obesity %")) + 
+     geom_line(aes(y = No_Physical_Activity, color="No Physical Activity %")) +
+     facet_geo(~ LocationDesc, grid = "us_state_grid2") +
+     scale_x_continuous(labels = function(x) paste0("'", substr(x, 3, 4))) +
+     scale_color_manual(values = c(
+    'Obesity %' = 'steelblue',
+    'No Physical Activity %' = 'darkred')) +
+  labs(color = 'Data')
+     ylab("Data Value (%)")
+```
+
+
+```{r}
+
+pe_2018_states <-pe %>% 
+  filter(!(LocationAbbr=="PR" | LocationAbbr=="GU" | LocationAbbr=="VI"| LocationAbbr=="US") &
+           YearStart=="2018")
+
+pe_2018_breastfeeding_questions <- pe_2018_states %>%
+  filter(Class=="Breastfeeding")%>%
+  select(Question) %>% distinct()
+
+pe_2018_states$Data_Value <- as.numeric(pe_2018_states$Data_Value)
+
+pe_2018_breastfeeding_questions_data <- pe_2018_states %>%
+  filter(Question %in% pe_2018_breastfeeding_questions$Question)%>%
+  group_by(LocationDesc) %>%
+  summarise(avg_brf = mean(Data_Value))
+
+pe_2018_breastfeeding_questions_data[is.na(pe_2018_breastfeeding_questions_data)] <- 0
+
+df_pe <- pe_2018_breastfeeding_questions_data %>% as.data.frame() %>% 
+    transmute(region = tolower(LocationDesc), value = avg_brf)
+
+state_choropleth(df_pe,
+                 title = "State Breastfeeding Support, 2018",
+                 legend = "Average Breastfeeding Support")
+```

@@ -1,87 +1,28 @@
 # Results
 
-
-```{r}
-
-
+``` {r}
 library(dplyr)
 library(ggplot2)
+library(tidyr)
 library(forcats)
-
-brfs <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
-
-pe <- read.csv("datasets/Nutrition__Physical_Activity__and_Obesity_-_Policy_and_Environmental_Data.csv")
-
-brfs_national <- brfs %>%
-  filter(LocationDesc=="National")
-
-brfs_national$YearStart <- as.factor(brfs_national$YearStart)
-
-brfs_national$Question <- as.factor(brfs_national$Question)
-brfs_national$QuestionRenamed <- brfs_national$Question
-levels(brfs_national$QuestionRenamed) <- c("Overweight", "Obese", "150 mins Moderate", "150 min Moderate & Muscle Strengthening", "300 min Moderate", "Muscle Strengthening", "No Activity", "No Fruit Comsumption", "No Vegetable Consumption")
-
-brfs_national <- brfs %>%
-  filter(LocationDesc=="National")
-
-brfs_national$YearStart <- as.factor(brfs_national$YearStart)
-
-brfs_national_income <- brfs_national %>% filter(StratificationCategory1=="Income")
-
-brfs_national_income_year <- brfs_national_income %>% filter(Total!="Total" & Income=="Data not reported") %>% group_by(YearStart, Class) %>%
-  summarise(n = n())
-
-```
-
-
-```{r}
-
-library(vcd)
-library(forcats)
-
-brfs_national_income_obesity <- brfs_national_income %>% filter(Class == "Obesity / Weight Status" & QuestionRenamed=="Obese")
-
-brfs_national_income_obesity_mosaic <-  brfs_national_income_obesity %>% select(YearStart,Stratification1,Data_Value) %>% rename(Freq = Data_Value,
- Income = Stratification1) 
-
-brfs_national_income_obesity_mosaic$Income <- as.factor(brfs_national_income_obesity_mosaic$Income)
-brfs_national_income_obesity_mosaic$Income <- relevel(brfs_national_income_obesity_mosaic$Income,"Less than $15,000")
-
-vcd::mosaic(Income~YearStart, 
-            brfs_national_income_obesity_mosaic,
-            direction=c("v","h"),
-            labeling = labeling_values)
-
-
-
-
-```
-
-```{r}
-
-g_ts_income_obesity <- ggplot(brfs_national_income_obesity_mosaic, aes(y=Freq, x=YearStart))+geom_point(aes(colour = Income, group = Income))+geom_line(aes(colour = Income, group = Income)) 
-plot(g_ts_income_obesity)
-# chaneg Freq to percentage of adults
-
-
-```
-
-``` {r}
-brfs_national_age_obesity <- brfs_national %>% filter(StratificationCategory1=="Age (years)" & Class == "Obesity / Weight Status" & QuestionRenamed=="Obese")
-
-brfs_national_age_obesity_filtered <-  brfs_national_age_obesity %>% select(YearStart,Stratification1,Data_Value) %>%
-  rename(Age_Group = Stratification1)
-
-brfs_national_age_obesity_filtered$Age_Group <- as.factor(brfs_national_age_obesity_filtered$Age_Group)
-
-g_ts_age_obesity <- ggplot(brfs_national_age_obesity_filtered, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Age_Group, group = Age_Group))+geom_line(aes(colour = Age_Group, group = Age_Group)) 
-plot(g_ts_age_obesity)
-
-```
-
-``` {r}
-
 library(directlabels)
+library(choroplethr)
+library(choroplethrMaps)
+library(statebins)
+library(viridis)
+
+brfs <- read.csv("data/clean/BRFS_Filtered.csv")
+pe <- read.csv("data/clean/PE_Filtered.csv")
+
+```
+
+## Dataset 1 Obesity-Behavioral
+
+In this dataset, we have data from 2011-2019. This data was utilised to form a time-series graph showing the trends of Obesity Rates over approx. the last decade, in different StratificationCategories and also SubCategories.
+
+``` {r, fig.height=10, fig.width=10}
+
+brfs_national <- brfs %>% filter(LocationDesc=="National")
 
 brfs_national_obesity <- brfs_national %>% filter(Class == "Obesity / Weight Status" & QuestionRenamed=="Obese")
 
@@ -104,202 +45,226 @@ ggList <- lapply(split(brfs_national_obesity_filtered, brfs_national_obesity_fil
   ggplot(i, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Stratification, group = Stratification))+geom_line(aes(colour = Stratification, group = Stratification))}) 
 
 # plot as grid in 1 columns
-cowplot::plot_grid(plotlist = ggList, ncol = 3,
+cowplot::plot_grid(plotlist = ggList, ncol = 2,
                    align = 'v', labels = levels(brfs_national_obesity_filtered$StratificationCategory1))
 
 ```
 
-``` {r}
+For each of the Stratification Categories, we can observe a clear upwards trend i.e. as the years have gone by, the obesity rates have increased. The "Total" plot summarises this trend across all Stratification Categories. 
 
-questions <- c("Obese","No Activity","No Fruit Comsumption", "No Vegetable Consumption")
+With the "Age(years)", "Education", "Income" and "Race/Ethnicity" Categories, we can definitely see a visible difference in obesity rates of some sub-groups within them (lines located at the bottom part of the graph, ex: College graduates have much lower obesity rates than less educated adults), over the others. In our analysis below, we continue to look deeper into these groups.
+
+
+``` {r, fig.height=7, fig.width=10}
+
+questions <- c("Obese","No Activity","No Fruit Consumption", "No Vegetable Consumption")
 
 # Filter year and questions first
-brfs_2019_filtered <-brfs_national %>% 
-  filter(YearStart==2019 & QuestionRenamed %in% questions) %>% 
-  select(YearStart,Class,StratificationCategory1,Stratification1,QuestionRenamed,Data_Value) 
-
-brfs_2019_filtered$Class <- as.factor(brfs_2019_filtered$Class)
-
-brfs_2019_filtered$Class <- relevel(brfs_2019_filtered$Class,"Obesity / Weight Status")
+brfs_2019_filtered <-brfs_national %>%
+  filter(YearStart==2019 & QuestionRenamed %in% questions) %>%
+  select(YearStart,LocationDesc,Class,StratificationCategory1,Stratification1,QuestionRenamed,Data_Value)
 
 brfs_2019_filtered$Class2 <- as.factor(brfs_2019_filtered$Class)
+brfs_2019_filtered$Class2 <- relevel(brfs_2019_filtered$Class2,"Obesity / Weight Status")
 levels(brfs_2019_filtered$Class2) <- c("Obesity Status","No Fruit/Vegetable Consumption Daily","No Physical Activity Weekly")
-
-brfs_2019_filtered$Stratification1 <- as.factor(brfs_2019_filtered$Stratification1)
-
-# Filter for race data
-
-brfs_2019_race <-brfs_2019_filtered %>% 
-  filter(StratificationCategory1=="Race/Ethnicity") %>% 
-  group_by(Class2,Stratification1) %>%
-  summarise(mean_data_value = mean(Data_Value))
-# %>% 
-#   ungroup() %>%
-#   group_by(Class) %>%
-#   arrange(desc(mean_data_value), .by_group = TRUE)
-
-
-brfs_2019_race.mean = brfs_2019_race %>% 
-  group_by(Class2) %>% 
-  mutate(ymean = mean(mean_data_value))
 
 cols <- c("Class Average %"="red")
 
-barplot <-  ggplot(brfs_2019_race,aes(x=Stratification1, y=mean_data_value))+
-  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
-  geom_errorbar(data=brfs_2019_race.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
-               size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
-  scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
-  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
-  ylab("Percentage") +
-  ggtitle("Percentage across different Race/Ethnicity Groups in 2019")
-
-plot(barplot)
-
-# For Asians, the obesity status is the least.
-# The levels of lack of fruit/vegetable consumption and lack of physical activity are not that much higher for Hawaiian/Pacific Island people even though their obesity status is the highest. This could be due to genetic or other factors, not captured in the available data.
-# For 2 or more races, American Indian/Alaska Native, Non-Hispanic black -> they have less nutrition and physical activity than others, and also high obesity status.
-
-```
-
-
-``` {r}
-
-brfs_2019_income <-brfs_2019_filtered %>% 
-  filter(StratificationCategory1=="Income") %>% 
+brfs_2019_age <-brfs_2019_filtered %>%
+  filter(StratificationCategory1=="Age (years)") %>%
   group_by(Class2,Stratification1) %>%
   summarise(mean_data_value = mean(Data_Value))
 
-brfs_2019_income$Stratification1 <- as.factor(brfs_2019_income$Stratification1)
-brfs_2019_income$Stratification1 <- relevel(brfs_2019_income$Stratification1,"Less than $15,000")
-
-brfs_2019_income.mean = brfs_2019_income %>% 
-  group_by(Class2) %>% 
+brfs_2019_age.mean = brfs_2019_age %>%
+  group_by(Class2) %>%
   mutate(ymean = mean(mean_data_value))
 
-barplot <-  ggplot(brfs_2019_income,aes(x=Stratification1, y=mean_data_value))+
+barplot1 <-  ggplot(brfs_2019_age,aes(x=Stratification1, y=mean_data_value))+
+  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_errorbar(data=brfs_2019_age.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
+               size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
+  scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+
+  ylab("Percentage") +
+  ggtitle("Percentage across different Age Groups (years) in 2019")
+
+plot(barplot1)
+
+```
+
+We can see that middle bars are highest. For lower age group obesity is least - although fruit/vegetable consumption is low , physical activity is higher. As age increases, as expected, the physical activity is the least, although overall nutrition and obesity status are better than middle groups.
+
+``` {r, fig.height=7, fig.width=10}
+
+brfs_2019_income <-brfs_2019_filtered %>%
+  filter(StratificationCategory1=="Income") %>%
+  group_by(Class2,Stratification1) %>%
+  summarise(mean_data_value = mean(Data_Value))
+
+brfs_2019_income$Stratification1 <- fct_relevel(brfs_2019_income$Stratification1,"Less than $15,000")
+
+brfs_2019_income.mean = brfs_2019_income %>%
+  group_by(Class2) %>%
+  mutate(ymean = mean(mean_data_value))
+
+barplot2 <-  ggplot(brfs_2019_income,aes(x=Stratification1, y=mean_data_value))+
   geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
   geom_errorbar(data=brfs_2019_income.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
                size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
   scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
-  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+
   ylab("Percentage") +
   ggtitle("Percentage across different Income Groups in 2019")
 
-plot(barplot)
-
-# Overall decreasing trend..as income increases, more physically activity, more nutritious food, and more people with better obesity status
+plot(barplot2)
 
 ```
 
-``` {r}
+We observe an overall decreasing trend. Population belonging to higher income levels are found to be more physically active, eat more nutritious food, and also have better obesity status than lower income groups.
 
-brfs_2019_education <-brfs_2019_filtered %>% 
-  filter(StratificationCategory1=="Education") %>% 
+``` {r, fig.height=7, fig.width=10}
+
+brfs_2019_education <-brfs_2019_filtered %>%
+  filter(StratificationCategory1=="Education") %>%
   group_by(Class2,Stratification1) %>%
   summarise(mean_data_value = mean(Data_Value))
 
-brfs_2019_education.mean = brfs_2019_education %>% 
-  group_by(Class2) %>% 
+brfs_2019_education.mean = brfs_2019_education %>%
+  group_by(Class2) %>%
   mutate(ymean = mean(mean_data_value))
 
 brfs_2019_education$Stratification1 <- fct_relevel(brfs_2019_education$Stratification1, "Less than high school", after = 1)
 
 brfs_2019_education$Stratification1 <- fct_relevel(brfs_2019_education$Stratification1, "College graduate", after = Inf)
 
-barplot <-  ggplot(brfs_2019_education,aes(x=Stratification1, y=mean_data_value))+
+barplot3 <-  ggplot(brfs_2019_education,aes(x=Stratification1, y=mean_data_value))+
   geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
   geom_errorbar(data=brfs_2019_education.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
                size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
   scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
-  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+
   ylab("Percentage") +
   ggtitle("Percentage across different Education Groups in 2019")
 
-plot(barplot)
-
-# Overall decreasing trend..as education level increases, more physically activity, more nutritious food, and more people with better obesity status
+plot(barplot3)
 
 ```
-``` {r}
 
-brfs_2019_age <-brfs_2019_filtered %>% 
-  filter(StratificationCategory1=="Age (years)") %>% 
+An Overall decreasing trend is apparent. As education level increases, there is more physical activity taking place, more nutritious food being consumed, and more people with higher educationals levels are seen to have a better obesity status.
+
+``` {r, fig.height=7, fig.width=10}
+
+# Filter for race data
+
+brfs_2019_race <-brfs_2019_filtered %>%
+  filter(StratificationCategory1=="Race/Ethnicity") %>%
   group_by(Class2,Stratification1) %>%
   summarise(mean_data_value = mean(Data_Value))
 
-brfs_2019_age.mean = brfs_2019_age %>% 
-  group_by(Class2) %>% 
+brfs_2019_race.mean = brfs_2019_race %>%
+  group_by(Class2) %>%
   mutate(ymean = mean(mean_data_value))
 
-barplot <-  ggplot(brfs_2019_age,aes(x=Stratification1, y=mean_data_value))+
+cols <- c("Class Average %"="red")
+
+barplot4 <-  ggplot(brfs_2019_race,aes(x=Stratification1, y=mean_data_value))+
   geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
-  geom_errorbar(data=brfs_2019_age.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
+  geom_errorbar(data=brfs_2019_race.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
                size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
   scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
-  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
+  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+
   ylab("Percentage") +
-  ggtitle("Percentage across different Age Groups (years) in 2019")
+  ggtitle("Percentage across different Race/Ethnicity Groups in 2019")
 
-plot(barplot)
-
-# Middle bars are highest..for lower age group obesity is least - although fruit/vegetable consumption is low , physical activity is higher. As age increases, as expected, the phy activity is the least, although overall nutrition and obesity status are better than middle groups.
-
+plot(barplot4)
 ```
+
+For Asians, the obesity status is the least.
+The levels of lack of fruit/vegetable consumption and lack of physical activity are not that much higher for Hawaiian/Pacific Island people even though their obesity status is the highest. This could be due to genetic or other factors, not captured in the available data.
+For 2 or more races, American Indian/Alaska Native, Non-Hispanic black -> they have less nutrition and physical activity than others, and also high obesity status.
+
+*** Until now, we were looking at Total data across the US states. Now let's look at the data at the state-level and see if we spot any distinctive patterns.
+
 ``` {r}
 
-brfs_2019_gender <-brfs_2019_filtered %>% 
-  filter(StratificationCategory1=="Gender") %>% 
-  group_by(Class2,Stratification1) %>%
-  summarise(mean_data_value = mean(Data_Value))
+brfs_2019_state <- brfs %>%
+    filter(YearStart==2019 & 
+           Question=="Percent of adults aged 18 years and older who have obesity" &
+           StratificationCategory1=="Total")
 
-brfs_2019_gender.mean = brfs_2019_gender %>% 
-  group_by(Class2) %>% 
-  mutate(ymean = mean(mean_data_value))
+df_brfs <- brfs_2019_state %>% as.data.frame() %>% 
+    transmute(region = tolower(LocationDesc), value = Data_Value)
 
-barplot <-  ggplot(brfs_2019_gender,aes(x=Stratification1, y=mean_data_value))+
-  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
-  geom_errorbar(data=brfs_2019_gender.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
-               size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
-  scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
-  facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+ 
-  ylab("Percentage") +
-  ggtitle("Percentage split by Gender in 2019")
-
-plot(barplot)
-
-# No noticeable trend
+state_choropleth(df_brfs,
+                 title = "State Obesity Percent, 2019",
+                 legend = "Percent Obese")
 
 ```
-``` {r}
 
-pe$Question <- as.factor(pe$Question)
-pe$QuestionRenamed <- pe$Question
-levels(pe$QuestionRenamed) <- c("mPINC Score","State-Level Food Policy Council","Farmers Market Count" , "Food Hubs Count", "IBCLCs Count","La Leche Leaders Count", "Local Food Policy Council Count", "Percent of SNAP Farmers Markets", "Percent of WIC Farmers Markets" , "Percent of BFHI births", "Percent Sec Schools Allowing Soda Purchase", "Percent Sec Schools Allowing Sports Drink", "Percent of Sec Schools Offering Salad Bar", "Percent People Living 1/2 Mile of a Park", "Percent of Youth with Activity Areas Nearby", "State-National Alignment on Avoiding Sugar Regulations",
-"State-National Alignment on Restricting Media Age >2 yrs", "State-National Alignment on Physical Activity for Preschoolers" , "State-National Alignment on Prohibiting Media Age <=2 yrs","State-National Alignment on Fruit Serving  Regulations","State-National Alignment on Vegetable Serving Regulations","Complete Streets Policy","State Guidance on Policies for School Activity Facilities","State Guidance on Policies for School Recess","State Guidance on Policies for Time Spent in Activity During PE Class","State Guidance on Commuting to School by Walk or Bike","State-Level Farm to School/Preschool Policy")
+We can clearly see that there exists a chain of Southern states, starting from Oklahoma to West Virginia, with highest Percentage of Obese Adults. Now, let us try to dig deeper into the data for these states - let us look at how they fare in terms of Physical Activity and Nutrition.
+
+```{r}
+
+brfs_2019_state_all <-brfs %>%
+  filter(YearStart==2019 & QuestionRenamed %in% questions & StratificationCategory1=="Total") %>%
+  select(YearStart,LocationDesc,Class,StratificationCategory1,Stratification1,QuestionRenamed,Data_Value)
+
+brfs_2019_state_all <- brfs_2019_state_all %>% 
+                        group_by(LocationDesc, Class) %>% 
+                            summarise(mean_data_value = mean(Data_Value))
+
+
+ggplot(brfs_2019_state_all, aes(mean_data_value, fct_reorder2(LocationDesc, Class=="Obesity / Weight Status", mean_data_value, .desc=FALSE), color=Class)) +
+  geom_point() +
+  #scale_color_manual(values = c("blue", "red")) +
+  xlab("Percent of People") +
+    ylab("State") +
+    ggtitle("Percent of Obesity And Its Factos Per State")
+
+```
+The first thing we can notice that the overall trend for Lack of Physical Activity and Lack of Consumption of Fruits and Vegetable mirrors the overall trend of Obesity / Weight Status, especially for the upper half the graph which represents states with the Highest obesity percentages in the US.
+
+Combining our findings from the previous geo-plot, we find that the Southern States that showed up as having highest obesity rates also seem to be doing worse than other states in terms of Physical Activity and Nutrition - their rates of the Lack of Physical Activty and the Lack of Fruit/Vegetable Consumption are higher than other states.
+
+Therefore, from this dataset, our broad conclusions are:
+1. Overall increasing trend of Obesity regardless of Stratification Category, over the past decade
+2. Some sub-groups within each Stratification Category are doing better with their Obesity Status than others. In most cases, this is correlated with their lower rates of Lack of Physical Activty and Nutrition Intake.
+3. Southern states in the US have the highest Obesity Rates. This seems to be closely associated with their higher rates of Lack of Physical Activty and Nutrition Intake.
+
+
+## Dataset 2 Obesity-Policy-Support 
+
+``` {r}
 
 pe_2018_states <- pe %>% filter(YearStart==2018 & !LocationAbbr=="US")
 
 # Nutrition Histogram
 questions_nutrition_yesnoq <- c("State-Level Food Policy Council","State-National Alignment on Fruit Serving  Regulations","State-National Alignment on Vegetable Serving Regulations","State-Level Farm to School/Preschool Policy")
+
 pe_2018_nutrition_yesnoq <- pe_2018_states %>%
   filter(Class=="Fruits and Vegetables" & QuestionRenamed %in% questions_nutrition_yesnoq) %>%
   group_by(LocationAbbr) %>%
   summarise(n_policies = sum(Data_Value=="Yes"))
 
-hist <- ggplot(pe_2018_nutrition_yesnoq, aes(x= n_policies)) + 
-  geom_histogram(binwidth=1,center=1, colour = "#80593D", fill = "lightblue", closed="left") +
-  xlab("Number of Policies Exisiting for Better Nutrition at the State-Level")+
+hist <- ggplot(pe_2018_nutrition_yesnoq, aes(x= n_policies)) +
+  geom_histogram(binwidth=1,center=1, colour = "black", fill="#f1beb6", closed="left") +
+  xlab("Number of Policies Exisiting for Better Nutrition at the State-Level") +
   ylab("Number of States")+
   ggtitle("Histogram for Number of Policies Exisiting for Better Nutrition at the State-Level in 2018") +
   scale_x_continuous(breaks = seq(0 , 5 , by=1)) +
-  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=2.5) 
+  ylim(c(0,40)) +
+  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=3.5)+
+  theme_minimal()
 
 plot(hist)
 
+```
+
+``` {r}
+
 # Distribution of counts of Local Food Policy Councils across States
 pe_2018_nutrition_localpolicycouncil_states <- pe_2018_states %>%
-  filter(Class=="Fruits and Vegetables" & QuestionRenamed =="State-Level Food Policy Council" 
+  filter(Class=="Fruits and Vegetables" & QuestionRenamed =="State-Level Food Policy Council"
          & Data_Value=="Yes") %>%
   select(LocationAbbr) %>%
   distinct()
@@ -310,17 +275,18 @@ pe_2018_nutrition_localpolicycouncil_counts <- pe_2018_states %>%
   distinct()
 
 min(pe_2018_nutrition_localpolicycouncil_counts$Data_Value) #0
-max(pe_2018_nutrition_localpolicycouncil_counts$Data_Value) #8 
+max(pe_2018_nutrition_localpolicycouncil_counts$Data_Value) #8
 
 pe_2018_nutrition_localpolicycouncil_counts$Data_Value <- as.numeric(pe_2018_nutrition_localpolicycouncil_counts$Data_Value)
 
-hist_localpolicycounts <- ggplot(pe_2018_nutrition_localpolicycouncil_counts, aes(x= Data_Value)) + 
-  geom_histogram(binwidth=5,center=2.5, colour = "#80593D", fill = "lightblue") +
+hist_localpolicycounts <- ggplot(pe_2018_nutrition_localpolicycouncil_counts, aes(x= Data_Value))+
+  geom_histogram(binwidth=5,center=2.5, colour = "black", fill="#f1beb6", closed="left") +
   xlab("Number of Food Policy Councils")+
   ylab("Number of States")+
   ggtitle("Distribution of Number of Local Food Policy Counts per State in 2018") +
   scale_x_continuous(breaks = seq(0 , 30 , by=5)) +
-  stat_bin(binwidth=5,center=2.5,geom="text", aes(label=..count..), vjust=-1.5, size=2.5) 
+  stat_bin(binwidth=5,center=2.5,geom="text", aes(label=..count..), vjust=-1.5, size=3.5)+
+  theme_minimal()
 
 plot(hist_localpolicycounts)
 
@@ -336,13 +302,14 @@ pe_2018_pa_yesnoq <- pe_2018_states %>%
   group_by(LocationAbbr) %>%
   summarise(n_policies = sum(Data_Value=="Yes"))
 
-hist2 <- ggplot(pe_2018_pa_yesnoq, aes(x= n_policies)) + 
-  geom_histogram(binwidth=1,center=1, colour = "#80593D", fill = "lightblue", closed="left") +
+hist2 <- ggplot(pe_2018_pa_yesnoq, aes(x= n_policies)) +
+  geom_histogram(binwidth=1,center=1, colour = "black", fill="#f1beb6", closed="left") +
   xlab("Number of Policies Exisiting to Encourage Physical Activity at the State-Level")+
   ylab("Number of States")+
   ggtitle("Histogram for Number of Policies Exisiting to Encourage Physical Activity at the State-Level in 2018") +
   scale_x_continuous(breaks = seq(0 , 7 , by=1)) +
-  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=2.5) 
+  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=3.5)+
+  theme_minimal()
 
 plot(hist2)
 ```
@@ -356,18 +323,19 @@ pe_2018_tel_yesnoq <- pe_2018_states %>%
   group_by(LocationAbbr) %>%
   summarise(n_policies = sum(Data_Value=="Yes"))
 
-hist3 <- ggplot(pe_2018_tel_yesnoq, aes(x= n_policies)) + 
-  geom_histogram(binwidth=1,center=1, colour = "#80593D", fill = "lightblue", closed="left") +
+hist3 <- ggplot(pe_2018_tel_yesnoq, aes(x= n_policies)) +
+  geom_histogram(binwidth=1,center=1, colour = "black", fill="#f1beb6", closed="left") +
   xlab("Number of Policies Exisiting to Restrict Telivision Viewing at the State-Level")+
   ylab("Number of States")+
   ggtitle("Histogram for Number of Policies Exisiting to Restrict Telivision Viewing at the State-Level in 2018") +
   scale_x_continuous(breaks = seq(0 , 7 , by=1)) +
-  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=2.5) 
+  stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=3.5)+
+  theme_minimal()
 
 plot(hist3)
 ```
 
-``` {r}
+``` {r, fig.height=10, fig.width=10}
 
 # All policies for yes or no per state
 questions_yesnoq <- c(questions_nutrition_yesnoq,questions_pa_yesnoq,questions_tel_yesnoq)
@@ -375,9 +343,9 @@ questions_yesnoq <- c(questions_nutrition_yesnoq,questions_pa_yesnoq,questions_t
 pe_2018_yesnoq <- pe_2018_states %>%
   filter(QuestionRenamed %in% questions_yesnoq) %>%
   group_by(LocationAbbr,Class) %>%
-  summarise(n_policies = sum(Data_Value=="Yes")) 
+  summarise(n_policies = sum(Data_Value=="Yes"))
 
-library(tidyr)
+pe_2018_yesnoq$state = pe_2018_yesnoq$LocationAbbr
 
 pe_2018_yesnoq_wider <- pe_2018_yesnoq %>% pivot_wider(names_from = Class, values_from = n_policies)
 
@@ -388,12 +356,6 @@ pe_2018_yesnoq_wider_pivot <- pivot_longer(pe_2018_yesnoq_wider, `Fruits and Veg
 
 pe_2018_yesnoq_wider_pivot[is.na(pe_2018_yesnoq_wider_pivot)] <- 0
 
-library(statebins)
-
-# pe_2018_yesnoq_wider_pivot$state <- pe_2018_yesnoq_wider_pivot$LocationAbbr
-# 
-# statebins(pe_2018_yesnoq, value_col="n_policies", name = "n_policies") +
-#   theme_statebins(legend_position="right")
 
 sb1 <- ggplot(pe_2018_yesnoq_wider_pivot, aes(state=LocationAbbr, fill=n_policies)) +
         geom_statebins() +
@@ -401,28 +363,12 @@ sb1 <- ggplot(pe_2018_yesnoq_wider_pivot, aes(state=LocationAbbr, fill=n_policie
         viridis::scale_fill_viridis(
         name = "Number of policies ", limits=c(0,6), breaks=0:6, option = "magma", direction = -1
         ) +
-        facet_wrap(~Class) +
+        facet_wrap(~Class, ncol=2) +
         labs(title="Number of policies for good Nutrition, Physicial Activity and Television Viewing ") +
         theme(plot.title=element_text(size=16, hjust=0)) +
-        theme(plot.margin = margin(30,30,30,30))
+        theme(plot.margin = margin(5,5,5,5))
 
 plot(sb1)
-
-```
-```{r}
-
-sb1_overall <- ggplot(pe_2018_yesnoq, aes(state=state, fill=n_policies)) +
-        geom_statebins() +
-        coord_equal() +
-        viridis::scale_fill_viridis(
-        name = "Number of policies ", limits=c(0,5), breaks=0:5, option = "magma", direction = -1
-        ) +
-        labs(title="Total Number of policies for good Nutrition, Physicial Activity and Television Viewing ") +
-        #theme_statebins(base_family = font_ps) +
-        theme(plot.title=element_text(size=16, hjust=0)) +
-        theme(plot.margin = margin(30,30,30,30))
-
-plot(sb1_overall)
 
 ```
 ```{r}
@@ -435,12 +381,16 @@ pe_2018_states$Data_Value <- as.numeric(pe_2018_states$Data_Value)
 
 pe_2018_breastfeeding_questions_data <- pe_2018_states %>%
   filter(QuestionRenamed %in% pe_2018_breastfeeding_questions$QuestionRenamed)%>%
-  group_by(LocationAbbr) %>%
+  group_by(LocationDesc) %>%
   summarise(avg_brf = mean(Data_Value))
 
 pe_2018_breastfeeding_questions_data[is.na(pe_2018_breastfeeding_questions_data)] <- 0
-  
 
+df_pe <- pe_2018_breastfeeding_questions_data %>% as.data.frame() %>% 
+    transmute(region = tolower(LocationDesc), value = avg_brf)
 
+state_choropleth(df_pe,
+                 title = "State Breastfeeding Support, 2018",
+                 legend = "Average Breastfeeding Support")
 ```
 

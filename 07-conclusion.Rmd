@@ -1,2 +1,8 @@
 # Conclusion
 
+## Dataset-1 
+
+Therefore, from this dataset, our broad conclusions are:
+1. Overall increasing trend of Obesity regardless of Stratification Category, over the past decade
+2. Some sub-groups within each Stratification Category are doing better with their Obesity Status than others. In most cases, this is correlated with their lower rates of Lack of Physical Activty and Nutrition Intake.
+3. Southern states in the US have the highest Obesity Rates. This seems to be closely associated with their higher rates of Lack of Physical Activty and Nutrition Intake.
