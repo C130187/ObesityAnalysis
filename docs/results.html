@@ -76,8 +76,8 @@
 <li class="chapter" data-level="2.1" data-path="data-sources.html"><a href="data-sources.html#datasets"><i class="fa fa-check"></i><b>2.1</b> Datasets</a></li>
 <li class="chapter" data-level="2.2" data-path="data-sources.html"><a href="data-sources.html#dataset-links-and-description"><i class="fa fa-check"></i><b>2.2</b> Dataset links and description</a>
 <ul>
-<li class="chapter" data-level="2.2.1" data-path="data-sources.html"><a href="data-sources.html#httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical-"><i class="fa fa-check"></i><b>2.2.1</b> 1. <span>https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-</span></a></li>
-<li class="chapter" data-level="2.2.2" data-path="data-sources.html"><a href="data-sources.html#httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical--1"><i class="fa fa-check"></i><b>2.2.2</b> 2. <span>https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-</span></a></li>
+<li class="chapter" data-level="2.2.1" data-path="data-sources.html"><a href="data-sources.html#httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical-activity-and-obesity-behavioralhn4x-zwk7"><i class="fa fa-check"></i><b>2.2.1</b> 1. <span>https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-Activity-and-Obesity-Behavioral/hn4x-zwk7</span></a></li>
+<li class="chapter" data-level="2.2.2" data-path="data-sources.html"><a href="data-sources.html#httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical-activity-and-obesity-policy-andk8w5-7ju6"><i class="fa fa-check"></i><b>2.2.2</b> 2. <span>https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-Activity-and-Obesity-Policy-and/k8w5-7ju6</span></a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a>
@@ -92,6 +92,7 @@
 <li class="chapter" data-level="3.2.1" data-path="data-transformation.html"><a href="data-transformation.html#filtering-of-columns-1"><i class="fa fa-check"></i><b>3.2.1</b> Filtering of columns:</a></li>
 <li class="chapter" data-level="3.2.2" data-path="data-transformation.html"><a href="data-transformation.html#column-transformation"><i class="fa fa-check"></i><b>3.2.2</b> Column transformation:</a></li>
 </ul></li>
+<li class="chapter" data-level="3.3" data-path="data-transformation.html"><a href="data-transformation.html#datasets-required-for-interactive-visualization"><i class="fa fa-check"></i><b>3.3</b> Datasets required for interactive visualization</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
 <ul>
@@ -106,8 +107,9 @@
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="conclusion.html"><a href="conclusion.html#r-markdown"><i class="fa fa-check"></i><b>7.1</b> R Markdown</a></li>
-<li class="chapter" data-level="7.2" data-path="conclusion.html"><a href="conclusion.html#including-plots"><i class="fa fa-check"></i><b>7.2</b> Including Plots</a></li>
+<li class="chapter" data-level="7.1" data-path="conclusion.html"><a href="conclusion.html#dataset-1"><i class="fa fa-check"></i><b>7.1</b> Dataset-1</a></li>
+<li class="chapter" data-level="7.2" data-path="conclusion.html"><a href="conclusion.html#dataset-2"><i class="fa fa-check"></i><b>7.2</b> Dataset-2</a></li>
+<li class="chapter" data-level="7.3" data-path="conclusion.html"><a href="conclusion.html#combining-dataset-1-and-dataset-2"><i class="fa fa-check"></i><b>7.3</b> Combining Dataset-1 and Dataset-2</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -132,7 +134,7 @@
 <h1><span class="header-section-number">Chapter 5</span> Results</h1>
 <div id="dataset-1-obesity-behavioral-2" class="section level2" number="5.1">
 <h2><span class="header-section-number">5.1</span> Dataset 1 Obesity-Behavioral</h2>
-<p>In this dataset, we have data from 2011-2019. This data was utilised to form a time-series graph showing the trends of Obesity Rates over approx. the last decade, in different StratificationCategories and also SubCategories.</p>
+<p>In this dataset, we have data from 2011-2019. This data was utilised to form a time-series graph showing the trends of Obesity Rates over the last decade, in different StratificationCategories and also SubCategories.</p>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
 <p>For each of the Stratification Categories, we can observe a clear upwards trend i.e. as the years have gone by, the obesity rates have increased. The “Total” plot summarises this trend across all Stratification Categories.</p>
 <p>With the “Age(years)”, “Education”, “Income” and “Race/Ethnicity” Categories, we can definitely see a visible difference in obesity rates of some sub-groups within them (lines located at the bottom part of the graph, ex: College graduates have much lower obesity rates than less educated adults), over the others. In our analysis below, we continue to look deeper into these groups.</p>
@@ -141,32 +143,36 @@
 <p><img src="finalproj_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
 <p>We observe an overall decreasing trend. Population belonging to higher income levels are found to be more physically active, eat more nutritious food, and also have better obesity status than lower income groups.</p>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
-<p>An Overall decreasing trend is apparent. As education level increases, there is more physical activity taking place, more nutritious food being consumed, and more people with higher educationals levels are seen to have a better obesity status.</p>
+<p>An overall decreasing trend is apparent. As education level increases, there is more physical activity taking place, more nutritious food being consumed, and more people with higher educationals levels are seen to have a better obesity status.</p>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
 <p>For Asians, the obesity status is the least.
 The levels of lack of fruit/vegetable consumption and lack of physical activity are not that much higher for Hawaiian/Pacific Island people even though their obesity status is the highest. This could be due to genetic or other factors, not captured in the available data.
 For 2 or more races, American Indian/Alaska Native, Non-Hispanic black -&gt; they have less nutrition and physical activity than others, and also high obesity status.</p>
 <p>*** Until now, we were looking at Total data across the US states. Now let’s look at the data at the state-level and see if we spot any distinctive patterns.</p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-8-1.png" width="960" /></p>
 <p>We can clearly see that there exists a chain of Southern states, starting from Oklahoma to West Virginia, with highest Percentage of Obese Adults. Now, let us try to dig deeper into the data for these states - let us look at how they fare in terms of Physical Activity and Nutrition.</p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="672" />
+<p><img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="960" />
 The first thing we can notice that the overall trend for Lack of Physical Activity and Lack of Consumption of Fruits and Vegetable mirrors the overall trend of Obesity / Weight Status, especially for the upper half the graph which represents states with the Highest obesity percentages in the US.</p>
 <p>Combining our findings from the previous geo-plot, we find that the Southern States that showed up as having highest obesity rates also seem to be doing worse than other states in terms of Physical Activity and Nutrition - their rates of the Lack of Physical Activty and the Lack of Fruit/Vegetable Consumption are higher than other states.</p>
-<p>*** Therefore, from this dataset, our broad conclusions are:
-1. Overall increasing trend of Obesity regardless of Stratification Category, over the past decade
-2. Some sub-groups within each Stratification Category are doing better with their Obesity Status than others. In most cases, this is correlated with their lower rates of Lack of Physical Activty and Nutrition Intake.
-3. Southern states in the US have the highest Obesity Rates. This seems to be closely associated with their higher rates of Lack of Physical Activty and Nutrition Intake.</p>
 </div>
 <div id="dataset-2-obesity-policy-support-2" class="section level2" number="5.2">
 <h2><span class="header-section-number">5.2</span> Dataset 2 Obesity-Policy-Support</h2>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<pre><code>## [1] &quot;0&quot;</code></pre>
-<pre><code>## [1] &quot;8&quot;</code></pre>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-14-1.png" width="960" />
-<img src="finalproj_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="576" />
+Majority of the states (30) containing exactly 1 Policy Encouraging Better Nutrition in that state. Only 5 out of 41 states contained &gt;=2 policies supporting better nutrition.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="576" />
+In the States that do have Food Policy Councils, most of them seem to have quite a low number - four or less.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-12-1.png" width="576" />
+Most states have exacty 1 Policy that Encourages Physical Activity. Around one-third of the states have no policy at all.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-13-1.png" width="576" />
+Very few states have any policy regarding Restricting Television Viewing (7). All the other states have no such policies.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-14-1.png" width="960" /></p>
+<p>From the histograms, we observed the distribution of number of policies at the state-level.
+From this geo-plot, we can see exactly which state has how many policies supporting each of the Classes - Nutrition, Physical Activity and Television Viewing.</p>
+<p>From the right-bottom graph, which sums up total number of policies from all three Classes per state, we observe that it is mostly Southern states like New Mexico, Tennessee, Mississippi, North Carolina etc.
+Therefore, we would expect these states to do better than others in terms of their Obesity rates.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-15-1.png" width="960" /></p>
+<p>We also had data regarding Breastfeeding Support in terms of the “Maternity Practices in Infant Nutrition and Care (mPINC)” score as well as the Percent of live births occurring at facilities designated as “baby friendly” by the Baby Friendly Hospital Initiative (BFHI). Since the mPINC score is also out of 100, we took an average of these scores per state to plot this graph.</p>
+<p>We do not observe a particular region in the US to be doing significantly better than others in providing Policy Support For BreastFeeding.</p>
 
 </div>
 </div>

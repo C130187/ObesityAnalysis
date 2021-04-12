@@ -21,3 +21,9 @@ including-plots
 dataset-2-obesity-policy-support-1
 dataset-1-obesity-behavioral-2
 dataset-2-obesity-policy-support-2
+dataset-1
+dataset-2
+combining-dataset-1-and-dataset-2
+httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical-activity-and-obesity-behavioralhn4x-zwk7
+httpschronicdata.cdc.govnutrition-physical-activity-and-obesitynutrition-physical-activity-and-obesity-policy-andk8w5-7ju6
+datasets-required-for-interactive-visualization

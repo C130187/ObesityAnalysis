@@ -128,3 +128,20 @@ levels(pe_filtered$QuestionRenamed) <- c("mPINC Score","State-Level Food Policy 
 write.csv(pe_filtered,"data/clean/PE_Filtered.csv", row.names = FALSE)
 
 ```
+
+## Datasets required for interactive visualization
+
+```{r}
+
+questions <- c("Obese","No Activity","No Fruit Consumption", "No Vegetable Consumption")
+
+brfs_state_all <-brfs %>%
+  filter(QuestionRenamed %in% questions & StratificationCategory1=="Total") 
+
+brfs_2019_state_all <- brfs_state_all %>% 
+                        group_by(YearStart, LocationDesc, Class) %>% 
+                            summarise(AvgValue = mean(Data_Value))
+
+write.csv(brfs_2019_state_all,"data/interactive/BRFS_AvgPerClassPerYear.csv", row.names = FALSE)
+
+```

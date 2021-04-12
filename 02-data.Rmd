@@ -11,8 +11,7 @@ specific data on obesity, nutrition, physical activity.
 
 ## Dataset links and description
 
-### 1. https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-
-Activity-and-Obesity-Behavioral/hn4x-zwk7
+### 1. https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-Activity-and-Obesity-Behavioral/hn4x-zwk7
 
 **Description**: This dataset includes data on policy and environmental supports for physical
 activity, diet etc.
@@ -30,8 +29,7 @@ Stratification1: Subcategories within each Stratification1, For example, for the
 
 **Issues discovered**: Within the Class "Nutrition Status", data was only present for the years 2017 and 2019. This made it impossible to use this Class for a meaningful time-series analysis.
 
-### 2. https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-
-Activity-and-Obesity-Policy-and/k8w5-7ju6
+### 2. https://chronicdata.cdc.gov/Nutrition-Physical-Activity-and-Obesity/Nutrition-Physical-Activity-and-Obesity-Policy-and/k8w5-7ju6
 
 **Description**: This dataset includes data on adult's diet, physical activity, and weight status
 from Behavioral Risk Factor Surveillance System.

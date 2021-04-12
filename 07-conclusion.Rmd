@@ -2,7 +2,17 @@
 
 ## Dataset-1 
 
-Therefore, from this dataset, our broad conclusions are:
+From this dataset, our broad conclusions are:
 1. Overall increasing trend of Obesity regardless of Stratification Category, over the past decade
 2. Some sub-groups within each Stratification Category are doing better with their Obesity Status than others. In most cases, this is correlated with their lower rates of Lack of Physical Activty and Nutrition Intake.
-3. Southern states in the US have the highest Obesity Rates. This seems to be closely associated with their higher rates of Lack of Physical Activty and Nutrition Intake.
+3. Southern states in the US have the highest Obesity Rates. This seems to be closely associated with their higher rates of Lack of Physical Activity and Nutrition Intake.
+
+## Dataset-2
+
+From this dataset, our broad conclusions are:
+1. States have most number of policies encouraging Good Nutrition Intake, followed by Physical Activity and lastly Television Viewing, which is hardly restricted in the US.
+2. Breastfeeding Policy Support Data across states does not seem to follow a discernable pattern in terms of more or less support in a particular US region.
+
+## Combining Dataset-1 and Dataset-2
+
+Looking at the Obesity Rates per state as well as distribution of policies under the Classes Good Nutrition Intake, followed by Physical Activity and lastly Television Viewing, we can say that there does seem to be a correlation between 

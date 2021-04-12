@@ -18,7 +18,7 @@ pe <- read.csv("data/clean/PE_Filtered.csv")
 
 ## Dataset 1 Obesity-Behavioral
 
-In this dataset, we have data from 2011-2019. This data was utilised to form a time-series graph showing the trends of Obesity Rates over approx. the last decade, in different StratificationCategories and also SubCategories.
+In this dataset, we have data from 2011-2019. This data was utilised to form a time-series graph showing the trends of Obesity Rates over the last decade, in different StratificationCategories and also SubCategories.
 
 ``` {r, fig.height=10, fig.width=10}
 
@@ -52,7 +52,7 @@ cowplot::plot_grid(plotlist = ggList, ncol = 2,
 
 For each of the Stratification Categories, we can observe a clear upwards trend i.e. as the years have gone by, the obesity rates have increased. The "Total" plot summarises this trend across all Stratification Categories. 
 
-With the "Age(years)", "Education", "Income" and "Race/Ethnicity" Categories, we can definitely see a visible difference in obesity rates of some sub-groups within them (lines located at the bottom part of the graph, ex: College graduates have much lower obesity rates than less educated adults), over the others. In our analysis below, we continue to look deeper into these groups.
+With the "Age(years)", "Education", "Income" and "Race/Ethnicity" Categories, we can see a visible difference in obesity rates of some sub-groups within them (lines located at the bottom part of the graph, ex: College graduates have much lower obesity rates than less educated adults), over the others. In our analysis below, we continue to look deeper into these groups.
 
 
 ``` {r, fig.height=7, fig.width=10}
@@ -80,19 +80,19 @@ brfs_2019_age.mean = brfs_2019_age %>%
   mutate(ymean = mean(mean_data_value))
 
 barplot1 <-  ggplot(brfs_2019_age,aes(x=Stratification1, y=mean_data_value))+
-  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_col(fill="lightBlue")+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3.5)+
   geom_errorbar(data=brfs_2019_age.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
                size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
   scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
   facet_wrap(~Class2, ncol = 1) + ylim(c(0,100))+
   ylab("Percentage") +
-  ggtitle("Percentage across different Age Groups (years) in 2019")
+  ggtitle("Percentage across different Age Groups (years) in 2019") 
 
 plot(barplot1)
 
 ```
 
-We can see that middle bars are highest. For lower age group obesity is least - although fruit/vegetable consumption is low , physical activity is higher. As age increases, as expected, the physical activity is the least, although overall nutrition and obesity status are better than middle groups.
+We can see that middle bars are highest. For lower age group obesity is least - although fruit/vegetable consumption is low, physical activity is higher. As age increases, as expected, the physical activity is the least, although overall nutrition and obesity status are better than middle groups.
 
 ``` {r, fig.height=7, fig.width=10}
 
@@ -108,7 +108,7 @@ brfs_2019_income.mean = brfs_2019_income %>%
   mutate(ymean = mean(mean_data_value))
 
 barplot2 <-  ggplot(brfs_2019_income,aes(x=Stratification1, y=mean_data_value))+
-  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_col(fill="lightBlue")+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3.5)+
   geom_errorbar(data=brfs_2019_income.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
                size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
   scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
@@ -138,7 +138,7 @@ brfs_2019_education$Stratification1 <- fct_relevel(brfs_2019_education$Stratific
 brfs_2019_education$Stratification1 <- fct_relevel(brfs_2019_education$Stratification1, "College graduate", after = Inf)
 
 barplot3 <-  ggplot(brfs_2019_education,aes(x=Stratification1, y=mean_data_value))+
-  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_col(fill="lightBlue")+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3.5)+
   geom_errorbar(data=brfs_2019_education.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
                size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
   scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
@@ -150,7 +150,7 @@ plot(barplot3)
 
 ```
 
-An Overall decreasing trend is apparent. As education level increases, there is more physical activity taking place, more nutritious food being consumed, and more people with higher educationals levels are seen to have a better obesity status.
+An overall decreasing trend is apparent. As education level increases, there is more physical activity taking place, more nutritious food being consumed, and more people with higher educationals levels are seen to have a better obesity status.
 
 ``` {r, fig.height=7, fig.width=10}
 
@@ -168,7 +168,7 @@ brfs_2019_race.mean = brfs_2019_race %>%
 cols <- c("Class Average %"="red")
 
 barplot4 <-  ggplot(brfs_2019_race,aes(x=Stratification1, y=mean_data_value))+
-  geom_col()+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3)+
+  geom_col(fill="lightBlue")+geom_text(aes(label=mean_data_value),vjust = -1.5, position = position_dodge(width = 1),size=3.5)+
   geom_errorbar(data=brfs_2019_race.mean, aes(x=Stratification1, ymax = ymean, ymin = ymean, colour="Class Average %"),
                size=0.5, linetype = "longdash", inherit.aes = F, width = 1)+
   scale_colour_manual(name="Dotted Line",values=cols)+ scale_fill_manual(name="Bar",values=cols) +
@@ -179,13 +179,12 @@ barplot4 <-  ggplot(brfs_2019_race,aes(x=Stratification1, y=mean_data_value))+
 plot(barplot4)
 ```
 
-For Asians, the obesity status is the least.
-The levels of lack of fruit/vegetable consumption and lack of physical activity are not that much higher for Hawaiian/Pacific Island people even though their obesity status is the highest. This could be due to genetic or other factors, not captured in the available data.
-For 2 or more races, American Indian/Alaska Native, Non-Hispanic black -> they have less nutrition and physical activity than others, and also high obesity status.
+For Asians, the obesity status is the least. The levels of "Lack of Physical Activity" and "Lack of Consumption of Fruits and Vegetables" are not that much higher for Hawaiian/Pacific Island people even though their obesity status is the highest. This could be due to genetic or other factors, not captured in the available datasets.
+For the sub-categories of 2 or more races, American Indian/Alaska Native, Non-Hispanic Black, we see that they have less nutrition and physical activity than others, and also high obesity status.
 
-*** Until now, we were looking at Total data across the US states. Now let's look at the data at the state-level and see if we spot any distinctive patterns.
+Until now, we were looking at Total data across the US states. Now let's look at the data at the state-level and see if we spot any distinctive patterns.
 
-``` {r}
+``` {r, fig.height=7, fig.width=10}
 
 brfs_2019_state <- brfs %>%
     filter(YearStart==2019 & 
@@ -201,9 +200,9 @@ state_choropleth(df_brfs,
 
 ```
 
-We can clearly see that there exists a chain of Southern states, starting from Oklahoma to West Virginia, with highest Percentage of Obese Adults. Now, let us try to dig deeper into the data for these states - let us look at how they fare in terms of Physical Activity and Nutrition.
+We can clearly see that there exists a chain of Southern states, starting from Oklahoma to West Virginia, with the highest Percentage of Obese Adults among all states. Now, let us try to dig deeper into the data for these states - let us look at how they fare in terms of Physical Activity and Nutrition, and if we can find an association with their corresponding Obesity Rates.
 
-```{r}
+```{r,fig.height=7, fig.width=10}
 
 brfs_2019_state_all <-brfs %>%
   filter(YearStart==2019 & QuestionRenamed %in% questions & StratificationCategory1=="Total") %>%
@@ -213,28 +212,21 @@ brfs_2019_state_all <- brfs_2019_state_all %>%
                         group_by(LocationDesc, Class) %>% 
                             summarise(mean_data_value = mean(Data_Value))
 
-
 ggplot(brfs_2019_state_all, aes(mean_data_value, fct_reorder2(LocationDesc, Class=="Obesity / Weight Status", mean_data_value, .desc=FALSE), color=Class)) +
   geom_point() +
   #scale_color_manual(values = c("blue", "red")) +
   xlab("Percent of People") +
     ylab("State") +
-    ggtitle("Percent of Obesity And Its Factos Per State")
+    ggtitle("Percent of Obesity And Its Factors Per State")
 
 ```
-The first thing we can notice that the overall trend for Lack of Physical Activity and Lack of Consumption of Fruits and Vegetable mirrors the overall trend of Obesity / Weight Status, especially for the upper half the graph which represents states with the Highest obesity percentages in the US.
+The first thing we can notice that the overall trend for "Lack of Physical Activity" and "Lack of Consumption of Fruits and Vegetables" mirrors the overall trend of Obesity / Weight Status, especially for the upper half the graph which represents states with the Highest obesity percentages in the US.
 
 Combining our findings from the previous geo-plot, we find that the Southern States that showed up as having highest obesity rates also seem to be doing worse than other states in terms of Physical Activity and Nutrition - their rates of the Lack of Physical Activty and the Lack of Fruit/Vegetable Consumption are higher than other states.
 
-Therefore, from this dataset, our broad conclusions are:
-1. Overall increasing trend of Obesity regardless of Stratification Category, over the past decade
-2. Some sub-groups within each Stratification Category are doing better with their Obesity Status than others. In most cases, this is correlated with their lower rates of Lack of Physical Activty and Nutrition Intake.
-3. Southern states in the US have the highest Obesity Rates. This seems to be closely associated with their higher rates of Lack of Physical Activty and Nutrition Intake.
-
-
 ## Dataset 2 Obesity-Policy-Support 
 
-``` {r}
+``` {r, fig.height=6, fig.width=6}
 
 pe_2018_states <- pe %>% filter(YearStart==2018 & !LocationAbbr=="US")
 
@@ -259,8 +251,9 @@ hist <- ggplot(pe_2018_nutrition_yesnoq, aes(x= n_policies)) +
 plot(hist)
 
 ```
+Majority of the states (30) containing exactly 1 Policy Encouraging Better Nutrition in that state. Only 5 out of 41 states contained >=2 policies supporting better nutrition.
 
-``` {r}
+``` {r, fig.height=6, fig.width=6}
 
 # Distribution of counts of Local Food Policy Councils across States
 pe_2018_nutrition_localpolicycouncil_states <- pe_2018_states %>%
@@ -274,9 +267,6 @@ pe_2018_nutrition_localpolicycouncil_counts <- pe_2018_states %>%
   select(LocationAbbr,Data_Value) %>%
   distinct()
 
-min(pe_2018_nutrition_localpolicycouncil_counts$Data_Value) #0
-max(pe_2018_nutrition_localpolicycouncil_counts$Data_Value) #8
-
 pe_2018_nutrition_localpolicycouncil_counts$Data_Value <- as.numeric(pe_2018_nutrition_localpolicycouncil_counts$Data_Value)
 
 hist_localpolicycounts <- ggplot(pe_2018_nutrition_localpolicycouncil_counts, aes(x= Data_Value))+
@@ -284,15 +274,16 @@ hist_localpolicycounts <- ggplot(pe_2018_nutrition_localpolicycouncil_counts, ae
   xlab("Number of Food Policy Councils")+
   ylab("Number of States")+
   ggtitle("Distribution of Number of Local Food Policy Counts per State in 2018") +
-  scale_x_continuous(breaks = seq(0 , 30 , by=5)) +
-  stat_bin(binwidth=5,center=2.5,geom="text", aes(label=..count..), vjust=-1.5, size=3.5)+
+  scale_x_continuous(breaks = seq(0 , 32 , by=5)) +
+  stat_bin(binwidth=5,center=2.5,geom="text", aes(label=..count..), vjust=-1.5, size=3.5, closed="left")+
   theme_minimal()
 
 plot(hist_localpolicycounts)
 
 ```
+In the States that do have Food Policy Councils, most of them seem to have quite a low number - four or less.
 
-``` {r}
+``` {r, fig.height=6, fig.width=6}
 
 # Physical Activity
 questions_pa_yesnoq <- c("State-National Alignment on Physical Activity for Preschoolers","Complete Streets Policy",
@@ -308,13 +299,15 @@ hist2 <- ggplot(pe_2018_pa_yesnoq, aes(x= n_policies)) +
   ylab("Number of States")+
   ggtitle("Histogram for Number of Policies Exisiting to Encourage Physical Activity at the State-Level in 2018") +
   scale_x_continuous(breaks = seq(0 , 7 , by=1)) +
+  ylim(c(0,35)) +
   stat_bin(binwidth=1,center=1,geom="text", aes(label=..count..), vjust=-1.5, size=3.5)+
   theme_minimal()
 
 plot(hist2)
 ```
+Most states have exacty 1 Policy that Encourages Physical Activity. Around one-third of the states have no policy at all.
 
-``` {r}
+``` {r, fig.height=6, fig.width=6}
 
 # Television
 questions_tel_yesnoq <- c("State-National Alignment on Restricting Media Age >2 yrs","State-National Alignment on Prohibiting Media Age <=2 yrs")
@@ -334,6 +327,7 @@ hist3 <- ggplot(pe_2018_tel_yesnoq, aes(x= n_policies)) +
 
 plot(hist3)
 ```
+Very few states have any policy regarding Restricting Television Viewing (7). All the other states have no such policies.
 
 ``` {r, fig.height=10, fig.width=10}
 
@@ -366,12 +360,19 @@ sb1 <- ggplot(pe_2018_yesnoq_wider_pivot, aes(state=LocationAbbr, fill=n_policie
         facet_wrap(~Class, ncol=2) +
         labs(title="Number of policies for good Nutrition, Physicial Activity and Television Viewing ") +
         theme(plot.title=element_text(size=16, hjust=0)) +
-        theme(plot.margin = margin(5,5,5,5))
+        theme(plot.margin = margin(1,1,1,1))
 
 plot(sb1)
 
 ```
-```{r}
+
+From the histograms, we observed the distribution of number of policies at the state-level.
+From this geo-plot, we can see exactly which state has how many policies supporting each of the Classes - Nutrition, Physical Activity and Television Viewing.
+
+From the right-bottom graph, which sums up total number of policies from all three Classes per state, we observe that it is mostly Southern states like New Mexico, Tennessee, Mississippi, North Carolina etc.
+Therefore, we would expect these states to do better than others in terms of their Obesity rates. 
+
+```{r, fig.height=10, fig.width=10}
 
 pe_2018_breastfeeding_questions <- pe_2018_states %>%
   filter(Class=="Breastfeeding")%>%
@@ -394,3 +395,6 @@ state_choropleth(df_pe,
                  legend = "Average Breastfeeding Support")
 ```
 
+We also had data regarding Breastfeeding Support in terms of the "Maternity Practices in Infant Nutrition and Care (mPINC)" score as well as the Percent of live births occurring at facilities designated as "baby friendly" by the Baby Friendly Hospital Initiative (BFHI). Since the mPINC score is also out of 100, we took an average of these scores per state to plot this graph.
+
+We do not observe a particular region in the US to be doing significantly better than others in providing Policy Support For BreastFeeding.
