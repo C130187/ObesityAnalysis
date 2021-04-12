@@ -12,6 +12,7 @@ Following describe the steps taken to preprocess the data for use in our analysi
 ### Filtering of columns:
 
 **Redundant Columns**:
+
 1. YearStart and YearEnd columns contained exactly the same values. We retained only YearStart.
 2. Data_Value_Type contains no useful information. All values are "Value". 
 3. Data_Value and Data_Value_Alt columns contained exactly the same values. We retained only Data_Value.
@@ -21,11 +22,13 @@ Following describe the steps taken to preprocess the data for use in our analysi
 Note: Together, the columns - "Total", "Age(years)", "Education", "Gender", "Income", "Race/Ethnicity" contain the same information as present in columns "StratificationCategory1" and "Stratification1". However, we retained these duplicate columns to enable use in visualizations conforming to etiher pivot or unpivoted data.
 
 **Columns with mostly NA/empty values**:
+
 1. Data_Value_Unit
 2. Data_Value_Footnote
 3. Data_Value_Footnote_Symbol
 
 **Columns which were not meaningful for our analysis**:
+
 1. Datasource
 2. Low_Confidence_Limit
 3. High_Confidence_Limit
@@ -79,6 +82,7 @@ write.csv(brfs_filtered,"data/clean/BRFS_Filtered.csv", row.names = FALSE)
 ### Filtering of columns:
 
 **Redundant Columns**:
+
 1. YearStart and YearEnd columns mostly contained the same values, except for 52 rows (0.7% of total data), which contained a one year differed. We retained only YearStart.
 2. Data_Value_Type contains no useful information. All values are "Value". 
 3. Data_Value and Data_Value_Alt columns contained redundant information, with just slight difference in notation - For example, Yes in Data_Value was mapped to a specific number in Data_Value_Alt. We retained only Data_Value.
@@ -87,11 +91,13 @@ write.csv(brfs_filtered,"data/clean/BRFS_Filtered.csv", row.names = FALSE)
 6. StratificationCategory1, Stratification1, StratificationCategoryID1, StratificationID1, Total all contain the same value = "Total". We removed all.
 
 **Columns with mostly NA/empty values**:
+
 1. Data_Value_Unit
 2. Data_Value_Footnote
 3. Data_Value_Footnote_Symbol
 
 **Columns which were not meaningful for our analysis**:
+
 1. Datasource
 2. ClassID
 3. TopicID
@@ -99,7 +105,7 @@ write.csv(brfs_filtered,"data/clean/BRFS_Filtered.csv", row.names = FALSE)
 5. DataValueTypeID
 6. LocationID
 
-### Column transformation:
+### Column transformations:
 
 1. Converted columns "YearStart","Class" and "Question" to factors.
 2. Created a new column "QuestionRenamed" from "Question" with shorter question descriptions.
@@ -129,13 +135,15 @@ write.csv(pe_filtered,"data/clean/PE_Filtered.csv", row.names = FALSE)
 
 ```
 
-## Datasets required for interactive visualization
+## Dataset required for interactive visualization
+
+Created a subset of the "Dataset 1 Obesity-Behavioral" data by combining the Percentage values of Lack of Fruit and Vegetable Consumption into a single number equal to the average value. 
 
 ```{r}
 
 questions <- c("Obese","No Activity","No Fruit Consumption", "No Vegetable Consumption")
 
-brfs_state_all <-brfs %>%
+brfs_state_all <-brfs_filtered %>%
   filter(QuestionRenamed %in% questions & StratificationCategory1=="Total") 
 
 brfs_2019_state_all <- brfs_state_all %>% 

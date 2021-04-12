@@ -1,3 +1,5 @@
 # Interactive component
 
+In this component, we would do a time-series plot of Obesity Status, Physical Activity Status, and Nutrition Status at the State-level instead of the Total level (done in section 2).
 
+We can observe that there are some states with fairly lower rates of increase in obesity levels over the years. 

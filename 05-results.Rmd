@@ -224,6 +224,11 @@ The first thing we can notice that the overall trend for "Lack of Physical Activ
 
 Combining our findings from the previous geo-plot, we find that the Southern States that showed up as having highest obesity rates also seem to be doing worse than other states in terms of Physical Activity and Nutrition - their rates of the Lack of Physical Activty and the Lack of Fruit/Vegetable Consumption are higher than other states.
 
+From this dataset, our broad conclusions are:
+1. Overall increasing trend of Obesity regardless of Stratification Category, over the past decade
+2. Some sub-groups within each Stratification Category are doing better with their Obesity Status than others. In most cases, this is correlated with their lower rates of Lack of Physical Activty and Nutrition Intake.
+3. Southern states in the US have the highest Obesity Rates. This seems to be closely associated with their higher rates of Lack of Physical Activity and Nutrition Intake.
+
 ## Dataset 2 Obesity-Policy-Support 
 
 ``` {r, fig.height=6, fig.width=6}
@@ -398,3 +403,7 @@ state_choropleth(df_pe,
 We also had data regarding Breastfeeding Support in terms of the "Maternity Practices in Infant Nutrition and Care (mPINC)" score as well as the Percent of live births occurring at facilities designated as "baby friendly" by the Baby Friendly Hospital Initiative (BFHI). Since the mPINC score is also out of 100, we took an average of these scores per state to plot this graph.
 
 We do not observe a particular region in the US to be doing significantly better than others in providing Policy Support For BreastFeeding.
+
+From this dataset, our broad conclusions are:
+1. States have most number of policies encouraging Good Nutrition Intake, followed by Physical Activity and lastly Television Viewing, which is hardly restricted in the US.
+2. Breastfeeding Policy Support Data across states does not seem to follow a discernable pattern in terms of more or less support in a particular US region.

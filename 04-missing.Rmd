@@ -2,6 +2,8 @@
 
 ## Dataset 1 Obesity-Behavioral
 
+This dataset contained two broad categories of missing values - some for which the rows were completely missing from the data, and others which had supplementary text in particular columns explaining that there was missing data for the given row. 
+
 ``` {r}
 library(dplyr)
 library(ggplot2)
@@ -22,7 +24,7 @@ brfs2[brfs2 == "Data not reported" ] <- NA
 visna(brfs2)
 
 ```
-We observed two patterns of missing data. 
+In above plot, we observed two patterns of missing data. 
 
 One is where due to "insufficient sample size" (mentioned in the Data_Value_Footnote column) for a given state and Question, some data values are missing.
 
@@ -96,7 +98,7 @@ There are no NA values in this dataset.
 
 To capture the missing entries over the years, we employed the same technique, as used for the Obesity-Behavioural dataset to generate this heatmap of missing entries.
 
-No distinct patterns can be found. Overall, this dataset seems much more sparse than the Obesity-Behavioural dataset.
+No distinct patterns can be found. However, overall, this dataset seems much more sparse than the Obesity-Behavioural dataset.
 
-As compared to 2019, 2018 has lesser number of missing values. Hence, in all our analysis at the state-level for these questions, we used data from 2018 instead of 2019 as recent data. 
+As compared to 2019, 2018 has lesser number of missing values. Hence, in all our analysis at the state-level for the policy related questions, we used data from 2018 (instead of 2019 which we used from Behavioral Obesity Dataset1) as recent data. 
 

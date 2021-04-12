@@ -1,18 +1,16 @@
 # Conclusion
 
-## Dataset-1 
+### Limitations
 
-From this dataset, our broad conclusions are:
-1. Overall increasing trend of Obesity regardless of Stratification Category, over the past decade
-2. Some sub-groups within each Stratification Category are doing better with their Obesity Status than others. In most cases, this is correlated with their lower rates of Lack of Physical Activty and Nutrition Intake.
-3. Southern states in the US have the highest Obesity Rates. This seems to be closely associated with their higher rates of Lack of Physical Activity and Nutrition Intake.
+In the "Dataset 1 Obesity-Behavioral" dataset, there was a column named "Sample Size" which had a different value for every Data Value provided in the dataset. This meant that since it was not a single sample from which all the numbers in the data were derived. Therefore we could not perform any analysis to see the proportions of population belonging to each of the Stratifications within the StratificationCategories. This analysis would have been useful to understand which strata of the society are contributing the most to higher obesity levels over the years.
 
-## Dataset-2
+Due to the sparsity of "Dataset 2 Obesity-Policy-Support" across the years, in the past decade, we were unable to analyse time-series trends for the policies supporting the different classes - BreastFeeding, Nutrition Intake, Physical Activity and Television Viewing.
 
-From this dataset, our broad conclusions are:
-1. States have most number of policies encouraging Good Nutrition Intake, followed by Physical Activity and lastly Television Viewing, which is hardly restricted in the US.
-2. Breastfeeding Policy Support Data across states does not seem to follow a discernable pattern in terms of more or less support in a particular US region.
+### Future Scope
 
-## Combining Dataset-1 and Dataset-2
+We could aim to root cause underlying factors responsible for the visible gaps observed in Obesity Rates among sub-cateogires of StratificationCategories. For example, Asians were observed to have a lower obesity rate although their "Lack of Fruit and Vegetable Consumption" and "Lack of Physical Activity" levels were comparable to other "Race/Ethnicity" groups which had much higher obesity rates.
+Factors like genetics, underlying health conditions of the sub-group etc. could possible provide explanations for such observations.We could join our data with datasets providing valuable information about these 
 
-Looking at the Obesity Rates per state as well as distribution of policies under the Classes Good Nutrition Intake, followed by Physical Activity and lastly Television Viewing, we can say that there does seem to be a correlation between 
+We could research associations between COVID hospitalizations, deaths,intensity of COVID symptoms etc. with this obesity data using additional COVID-related datasets.
+
+In Section 6, we noted that states did show some variations in levels of increase in Obesity Status, Physical Activity Status, and Nutrition Status over the years. It would be interesting to broadly categorise states into 2 categories - states with steep increases in obesity rates over the years, almost constant to low levels of increase in obesity rates. It would be then worth taking a deeper dive into these states and exploring the reasons behing these differences.

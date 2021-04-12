@@ -27,6 +27,7 @@ population belonging to different race, gender, age-group etc?
 4. How environmental and policy support distributed across the US? Is there a correlation between this support and obesity rates at the state-level? 
 
 References:
-[1] CDC study finds about 78% of people hospitalized for Covid were overweight or obese, Link:
-[CDC study Covid](https://www.cnbc.com/2021/03/08/covid-cdc-study-finds-roughly-78percent-of-people-
+
+[1] "CDC study finds about 78% of people hospitalized for Covid were overweight or obese"
+Link: [CDC study Covid](https://www.cnbc.com/2021/03/08/covid-cdc-study-finds-roughly-78percent-of-people-
 hospitalized-were-overweight-or-obese.html "CDC study Covid")
