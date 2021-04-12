@@ -1,3 +1,9 @@
+FINAL PROJECT FOR EDAV Spring 2021
+
+OBESITY ANALYSIS
+
+SALONI GUPTA AJAY KUMAR UNI: SG3910, YOSHA SINGH TOMAR UNI: YT2741
+
 A recent CDC study has shown that there is a possible link between obesity and COVID-19 risk for severe outcomes. A staggering 78% of people who were hospitalized, needed ventilators or died due to COVID-19 in the USA, were obese/overweight [1].
 
 This observation motivated us to dig deeper into data related to obesity trends in the USA. Through this project, we aim to analyze the underlying trends and contributing factors (Education, Income levels, Race etc.) that lead to obesity in adults. We also wish to study the policy support for healthy food intake, physical activity etc. and its correlation with the actual numbers indicating obesity/overweight classification.
