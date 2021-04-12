@@ -16,7 +16,7 @@ var path = d3.geoPath()               // path generator that will convert GeoJSO
 var color = d3.scaleLinear()
 			  .range(["red","green","blue"]);
 
-var legendText_2 = ["% Obese", "% No Phy Activity", "% No Fruits/Vege"];
+var legendText_2 = ["% Obese", "% No Physical Activity", "% No Fruits/Vegetables"];
 
 var myColor = d3.scaleLinear().domain([1,8])
                 .range(["white", "steelblue"])

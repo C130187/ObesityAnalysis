@@ -24,6 +24,7 @@ brfs2[brfs2 == "Data not reported" ] <- NA
 visna(brfs2)
 
 ```
+
 In above plot, we observed two patterns of missing data. 
 
 One is where due to "insufficient sample size" (mentioned in the Data_Value_Footnote column) for a given state and Question, some data values are missing.
