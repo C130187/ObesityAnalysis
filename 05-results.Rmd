@@ -42,7 +42,7 @@ brfs_national_obesity_filtered <- brfs_national_obesity_filtered %>% rename(Stra
 
 # make list of plots
 ggList <- lapply(split(brfs_national_obesity_filtered, brfs_national_obesity_filtered$StratificationCategory1), function(i) {
-  ggplot(i, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Stratification, group = Stratification))+geom_line(aes(colour = Stratification, group = Stratification))+xlab("Year")+ylab("Data_Value in %")+ scale_x_continuous(breaks = seq(2011,2020,1))}) 
+  ggplot(i, aes(y=Data_Value, x=YearStart))+geom_point(aes(colour = Stratification, group = Stratification))+geom_line(aes(colour = Stratification, group = Stratification))+xlab("Year")+ylab("Data_Value in %")+ scale_x_continuous(breaks = seq(2011,2020,2))}) 
 
 # plot as grid in 1 columns
 cowplot::plot_grid(plotlist = ggList, ncol = 2,

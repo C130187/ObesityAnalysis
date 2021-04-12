@@ -134,19 +134,19 @@
 <div id="dataset-1-obesity-behavioral-2" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Dataset 1 Obesity-Behavioral</h2>
 <p>This dataset contained two broad categories of missing values - some for which the rows were completely missing from the data, and others which had supplementary text in particular columns explaining that there was missing data for the given row.</p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>In above plot, we observed two patterns of missing data.</p>
 <p>One is where due to “insufficient sample size” (mentioned in the Data_Value_Footnote column) for a given state and Question, some data values are missing.</p>
 <p>We also noted that within the “Income” StratificationCategory1 group, in the “Stratification1” and “Income” columns, a subcategory called “Data not reported” constituted a small proportion of the entire dataset. In our further analysis, we treat this strata as just another subcategory within “Income”.</p>
 <p>Apart from these obvious missing patterns, this dataset also has completely missing rows of data across different years. Since these rows are not a part of the dataset explicitly, the above plot failed to capture them. We added rows for these missing values and indicated the Data_Value as missing, to enable us to visualise patterns of these missing values. This is shown in below plot.</p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-44-1.png" width="960" />
+<p><img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="960" />
 Data for Nutrition Status i.e. Questions - “No Vegetable Consumption” and “No Fruit Consumption” is missing from 2011-2015 and 2016.</p>
 <p>Data for four of the Physicial Activity Status Questions is also missing for alternate years starting from 2012 to 2018.</p>
 <p>Note that above heatmap only captures the missing entries that we explicitly added back - and not the NA values that the previous plot displayed.</p>
 </div>
 <div id="dataset-2-obesity-policy-support-2" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Dataset 2 Obesity-Policy-Support</h2>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-45-1.png" width="960" />
+<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="960" />
 For the Obesity-Policy-Support Dataset, we did a similar analysis.
 There are no NA values in this dataset.</p>
 <p>To capture the missing entries over the years, we employed the same technique, as used for the Obesity-Behavioural dataset to generate this heatmap of missing entries.</p>
