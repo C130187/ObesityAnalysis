@@ -84,6 +84,7 @@ var yAxis = d3.axisLeft()
 		.scale(yScale).ticks(5);
 
 svg_plot2.append("g")
+    .attr("class", "yAxis")
 		.attr("transform", `translate(${width/6-padding/10}, 0)`)
 		.call(yAxis);
 
@@ -105,6 +106,7 @@ var xAxis = d3.axisBottom()
 		.scale(xScale).ticks(9).tickFormat(d3.format("d"));;
 
 svg_plot2.append("g")
+    .attr("class", "xAxis")
 		.attr("transform", `translate(0, ${height - padding})`)
 		.call(xAxis);
 
@@ -231,6 +233,21 @@ d3.csv("https://raw.githubusercontent.com/C130187/ObesityAnalysis/main/data/inte
                 var mylinegen = d3.line() 
                 mylinegen.x(d => xScale(d[0]))
                          .y(d => yScale(d[1]));
+                
+                var min_y = d3.min([Math.min.apply(Math, d.properties.Obesity.map(v => v[1])),
+                                    Math.min.apply(Math, d.properties.NoActivity.map(v => v[1])),
+                                    Math.min.apply(Math, d.properties.NoNutrition.map(v => v[1]))])
+                
+                var max_y = d3.max([Math.max.apply(Math, d.properties.Obesity.map(v => v[1])),
+                                    Math.max.apply(Math, d.properties.NoActivity.map(v => v[1])),
+                                    Math.max.apply(Math, d.properties.NoNutrition.map(v => v[1]))])
+                
+                yScale.domain([Math.round(min_y)-5, Math.round(max_y)+5]);
+                
+                svg_plot2.select("g.yAxis")
+                		.transition()
+                    .duration(1000)
+                    .call(yAxis);
                 
                 var mypath_1 = mylinegen(d.properties.Obesity);
                 svg_plot2.append("path")
